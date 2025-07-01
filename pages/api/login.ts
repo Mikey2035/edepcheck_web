@@ -4,14 +4,14 @@ import bcrypt from 'bcrypt';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { identifier, password } = req.body; // "identifier" can be username or email
+    const { identifier, password } = req.body;
 
     try {
       if (!identifier || !password) {
         return res.status(400).json({ message: 'Username/email and password are required.' });
       }
 
-      // Try to find user by username or email
+
       const query = `SELECT * FROM users WHERE username = ? OR email = ? LIMIT 1`;
       const [rows]: any = await pool.execute(query, [identifier, identifier]);
 
@@ -21,7 +21,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const user = rows[0];
 
-      // Compare hashed password
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
         return res.status(401).json({ message: 'Invalid username/email or password.' });

@@ -9,7 +9,7 @@ import {
   orderBy,
   Timestamp,
 } from "firebase/firestore";
-import { db } from "@/configs/firebase";
+import { pool } from "@/configs/database";
 
 interface Result {
   id: string;
@@ -56,7 +56,7 @@ const AdminPage = () => {
     const fetchData = async () => {
       try {
         const resQuery = query(
-          collection(db, "phq9_results"),
+          collection(pool, "phq9_results"),
           orderBy("created_at", "desc")
         );
         const resSnap = await getDocs(resQuery);

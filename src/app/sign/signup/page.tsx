@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import MainLayout from '@/components/layout/MainLayout';
-import { auth, GoogleAuthProvider, signInWithPopup } from '@/configs/firebase'; // Import Firebase functions
 
 const SignUp: React.FC = () => {
   const router = useRouter();
@@ -55,7 +54,7 @@ const SignUp: React.FC = () => {
         body: JSON.stringify(formData),
       });
   
-      const data = await res.json(); // Parse JSON
+      const data = await res.json();
       if (!res.ok) {
         console.error('API error:', data.message);
         setStatusMessage(data.message || 'Something went wrong.');
@@ -63,8 +62,6 @@ const SignUp: React.FC = () => {
       } else {
         setStatusMessage('Your account has been created successfully!');
         setIsSuccessful(true);
-  
-        // Redirect to login page after successful sign-up
         router.push('/sign/login');
       }
     } catch (error) {
@@ -82,21 +79,6 @@ const SignUp: React.FC = () => {
     }
   };
   
-
-  const handleGoogleSignIn = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      console.log('Google Sign-In successful:', user);
-      // Handle the user (e.g., store user data or redirect)
-      router.push('/dashboard'); // Example redirect after successful login
-    } catch (error) {
-      console.error('Google Sign-In error:', error);
-      setStatusMessage('Google Sign-In failed. Please try again.');
-      setIsSuccessful(false);
-    }
-  };
 
   const handleLogIn = () => {
     router.push('/login');
@@ -213,12 +195,7 @@ const SignUp: React.FC = () => {
           </form>
 
           <div className="text-center my-4 text-gray-500 text-sm">or Sign in with</div>
-          <button
-            onClick={handleGoogleSignIn}
-            className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md w-full"
-          >
-            Sign in with Google
-          </button>
+          
 
           <div className="text-center mt-6 text-sm">
             Already have an account?{' '}

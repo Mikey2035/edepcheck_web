@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import MainLayout from '@/components/layout/MainLayout';
-import { auth, GoogleAuthProvider, signInWithPopup } from '@/configs/firebase';
+
 
 const LogIn: React.FC = () => {
   const router = useRouter();
@@ -47,11 +47,9 @@ const LogIn: React.FC = () => {
         setStatusMessage("Login successful!");
         setIsSuccessful(true);
 
-        // Save session data
         sessionStorage.setItem("username", data.user.username);
         sessionStorage.setItem("role", data.user.role);
 
-        // Redirect based on role
         if (data.user.role === "admin") {
           router.push("/admin");
         } else {
@@ -65,19 +63,7 @@ const LogIn: React.FC = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      console.log('Google Sign-In successful:', user);
-      router.push('/');
-    } catch (error) {
-      console.error('Google Sign-In error:', error);
-      setStatusMessage('Google Sign-In failed. Please try again.');
-      setIsSuccessful(false);
-    }
-  };
+  
 
   return (
     <MainLayout>
@@ -140,12 +126,7 @@ const LogIn: React.FC = () => {
             </button>
           </form>
           <div className="text-center my-4 text-gray-500 text-sm">or Sign in with</div>
-          <button
-            onClick={handleGoogleSignIn}
-            className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md w-full"
-          >
-            Sign in with Google
-          </button>
+          
 
           <div className="text-center mt-6 text-sm">
             Don't have an account?{' '}

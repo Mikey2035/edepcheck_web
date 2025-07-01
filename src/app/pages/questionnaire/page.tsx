@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { db } from "@/configs/firebase";
+import { IoArrowBack } from "react-icons/io5";
 
 const questions = [
   "Little interest or pleasure in doing things",
@@ -32,13 +31,28 @@ const getSeverity = (score: number) => {
   return "Severe depression";
 };
 
+const getAdvice = (severity: string) => {
+  if (severity === "Minimal depression" || severity === "Mild depression") {
+    return "You may seek guidance from our admin team.";
+  }
+  return "It is recommended to consult a mental health professional.";
+};
+
 export default function QuestionnairePage() {
   const router = useRouter();
   const [answers, setAnswers] = useState<number[]>(Array(9).fill(-1));
   const [error, setError] = useState("");
-  const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   const [severity, setSeverity] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
+  
+  useEffect(() => {
+    const username = sessionStorage.getItem("username");
+    if (!username) {
+      router.push("/sign");
+    }
+  }, [router]);
 
   const handleChange = (qIndex: number, value: number) => {
     const updated = [...answers];
@@ -60,25 +74,22 @@ export default function QuestionnairePage() {
 
     setScore(total);
     setSeverity(level);
-    setSubmitted(true);
-
-    try {
-      await addDoc(collection(db, "phq9_results"), {
-        username,
-        total_score: total,
-        severity: level,
-        created_at: Timestamp.now(),
-      });
-
-      console.log("PHQ-9 result saved to Firestore!");
-    } catch (err) {
-      console.error("Error saving to Firestore:", err);
-    }
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="max-w-3xl mx-auto px-4 py-8 relative">
+      <div className="flex items-center mb-4">
+        <button
+          onClick={() => router.back()}
+          className="text-blue-600 hover:text-blue-800 flex items-center"
+        >
+          <IoArrowBack className="mr-2" size={20} />
+          
+        </button>
+      </div>
+
       <h1 className="text-2xl font-bold text-blue-800 mb-4">PHQ-9 Depression Assessment</h1>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         {questions.map((question, idx) => (
           <div key={idx}>
@@ -111,10 +122,40 @@ export default function QuestionnairePage() {
         </button>
       </form>
 
-      {submitted && (
-        <div className="mt-6 bg-green-100 p-4 rounded">
-          <p className="text-lg">Your total score: <strong>{score}</strong></p>
-          <p>Your depression level: <strong>{severity}</strong></p>
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+            <h2 className="text-xl font-bold text-blue-700 mb-2">Your Assessment Result</h2>
+            <p><strong>Total Score:</strong> {score}</p>
+            <p><strong>Severity:</strong> {severity}</p>
+            <p className="mt-2 text-sm italic text-gray-700">{getAdvice(severity)}</p>
+
+            {["Moderate depression", "Moderately severe depression", "Severe depression"].includes(severity) && (
+              <div className="mt-4 text-sm text-blue-700">
+                <p className="font-semibold mb-1">Support Resources:</p>
+                <ul className="list-disc ml-6 space-y-1">
+                  <li><a href="https://www.facebook.com/DOHgovph/posts/3438694606180853/" target="_blank" className="underline">DOH Mental Health Hotline</a></li>
+                  <li><a href="https://mentalhealthph.org/" target="_blank" className="underline">MentalHealthPH</a></li>
+                  <li><a href="https://www.who.int/health-topics/mental-health" target="_blank" className="underline">WHO Mental Health Resources</a></li>
+                </ul>
+              </div>
+            )}
+
+            <div className="mt-6 flex justify-end gap-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 rounded border text-gray-700 hover:bg-gray-100"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => router.push("/pages/history")}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Go to History
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

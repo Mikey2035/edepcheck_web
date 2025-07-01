@@ -21,7 +21,7 @@ const Header: React.FC = () => {
   const handleLogout = () => {
     sessionStorage.removeItem("username");
     setUsername(null);
-    window.location.href = "/sign"; // Redirect to sign-in page
+    window.location.href = "/sign";
   };
 
   return (
@@ -52,7 +52,7 @@ const Header: React.FC = () => {
             <Link href="/pages/history">History</Link>
           </li>
           <li>
-            <Link href="/pages/learn">Learn More</Link>
+            <Link href="/pages/learnmore">Learn More</Link>
           </li>
           <li>
             <Link href="/pages/resources">Resources</Link>
@@ -60,12 +60,9 @@ const Header: React.FC = () => {
 
           {username ? (
             <li className="relative">
-              <button
-                className="cursor-pointer"
-                onClick={toggleProfileDropdown}
-              >
-                Profile
-              </button>
+              <Link href="/pages/profile">
+    <button className="cursor-pointer">Profile</button>
+  </Link>
 
               {isProfileDropdownVisible && (
                 <div className="absolute right-0 top-full mt-2 bg-white shadow-md rounded-md w-48 py-2 z-50">

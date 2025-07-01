@@ -1,4 +1,3 @@
-// Mark Home as a Client Component
 "use client";
 
 import React from "react";
@@ -16,11 +15,7 @@ const Home: React.FC = () => {
           backgroundPosition: "center",
         }}
       >
-        
-
-        
-        <div className="relative z-10 text-center py-16">
-          {/* Logo */}
+        <div className="relative z-10 text-center py-16 px-4 bg-white/70 rounded-lg shadow-lg max-w-3xl">
           <div className="mb-6">
             <img
               src="/images/Brainicon.png"
@@ -29,9 +24,18 @@ const Home: React.FC = () => {
             />
           </div>
 
-          
-          <h1 className="text-5xl font-bold text-black mb-4 ">E-DEPCHECK PHQ-9 DEPRESSION ASSESSMENT</h1>
-          <p className="text-xl text-black mb-6">Your Mental Health Matters</p>
+          <h1 className="text-4xl sm:text-5xl font-bold text-black mb-4">
+            E-DEPCHECK PHQ-9 DEPRESSION ASSESSMENT
+          </h1>
+          <p className="text-lg sm:text-xl text-black mb-6">
+            Your Mental Health Matters
+          </p>
+
+          <Link href="/pages/questionnaire">
+            <button className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition text-lg font-medium">
+              Take the Assessment
+            </button>
+          </Link>
         </div>
       </div>
     </MainLayout>

@@ -14,7 +14,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ message: 'All fields are required.' });
       }
 
-      // Check for existing user
       const [existingUsers] = await pool.execute(
         'SELECT * FROM users WHERE email = ? OR username = ?',
         [email, username]
@@ -27,13 +26,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      // Determine role
       let role = 'user';
       if (email === adminEmail && password === adminPassword) {
         role = 'admin';
       }
 
-      // Insert user into database with role
       const query = `
         INSERT INTO users (fullname, email, username, password, role)
         VALUES (?, ?, ?, ?, ?)`;
