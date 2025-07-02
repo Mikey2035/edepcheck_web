@@ -6,26 +6,21 @@ import { IoArrowBack } from "react-icons/io5";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [username, setUsername] = useState<string | null>(null);
-  const [email, setEmail] = useState<string | null>(null);
-
+  const [fullName, setFullName] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedUsername = sessionStorage.getItem("username");
-    const storedEmail = sessionStorage.getItem("email");
+    const storedFullName = sessionStorage.getItem("fullName");
 
-
-    if (!storedUsername) {
+    if (!storedFullName) {
       router.push("/sign");
     } else {
-      setUsername(storedUsername);
-      setEmail(storedEmail);
+      setFullName(storedFullName);
     }
   }, [router]);
 
   const handleLogout = () => {
     sessionStorage.clear();
-    router.push("/sign");
+    router.push("/sign/login");
   };
 
   return (
@@ -42,18 +37,9 @@ export default function ProfilePage() {
 
       <div className="bg-white shadow rounded-lg p-6 space-y-4">
         <div>
-          <p className="text-gray-600 text-sm">Full Name / Username:</p>
-          <p className="text-lg font-medium text-gray-900">{username}</p>
+          <p className="text-gray-600 text-sm">Full Name:</p>
+          <p className="text-lg font-medium text-gray-900">{fullName}</p>
         </div>
-
-        {email && (
-          <div>
-            <p className="text-gray-600 text-sm">Email:</p>
-            <p className="text-lg text-gray-900">{email}</p>
-          </div>
-        )}
-
-        
 
         <button
           onClick={handleLogout}

@@ -1,242 +1,357 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  collection,
-  getDocs,
-  query,
-  orderBy,
-  Timestamp,
-} from "firebase/firestore";
-import { pool } from "@/configs/database";
+import Link from "next/link";
 
-interface Result {
-  id: string;
-  username: string;
-  total_score: number;
+interface Exam {
+  exam_code: string;
+  title: string;
   severity: string;
-  created_at: Timestamp;
+  total_examinees: number;
+  exam_date: string;
 }
 
-interface User {
-  id: string;
-  email: string;
-  role: string;
-  fullname: string;
-}
-
-const AdminPage = () => {
+const AdminExamTable = () => {
+  const [exams, setExams] = useState<Exam[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState("");
   const router = useRouter();
-  const [username, setUsername] = useState("");
-  const [results, setResults] = useState<Result[]>([]);
-  const [filteredResults, setFilteredResults] = useState<Result[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [severityFilter, setSeverityFilter] = useState("All");
+  const [showQuestionModal, setShowQuestionModal] = useState(false);
+const [categoryName, setCategoryName] = useState("");
+const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+const [questionText, setQuestionText] = useState("");
+const [choices, setChoices] = useState(["", "", "", ""]);
+const [values, setValues] = useState([0, 0, 0, 0]);
+
+
+  useEffect(() => {
+  fetchExams();
+}, []);
+
+
+
+  const fetchExams = async () => {
+    try {
+      const response = await fetch("/api/exams");
+      const data = await response.json();
+      setExams(data);
+    } catch (err) {
+      console.error("Failed to fetch exams:", err);
+    }
+  };
+
+  const handleAddExam = async () => {
+    if (!title || !date) return;
+
+    const formattedDate = new Date(date);
+    const exam_code = formattedDate.toISOString().slice(0, 10).replace(/-/g, "");
+
+    const newExam = {
+      exam_code,
+      title,
+      severity: "Pending",
+      total_examinees: 0,
+      exam_date: formattedDate.toISOString().slice(0, 10),
+    };
+
+    try {
+      const res = await fetch("/api/exams", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newExam),
+      });
+
+      console.log("POST /api/exams status:", res.status);
+      const responseText = await res.text();
+      console.log("Response body:", responseText);
+
+      if (!res.ok) throw new Error(`Failed to add exam: ${res.status}`);
+
+      setTitle("");
+      setDate("");
+      setShowModal(false);
+      fetchExams();
+    } catch (err) {
+      console.error("Error adding exam:", err);
+    }
+  };
 
   const handleLogout = () => {
     sessionStorage.clear();
     router.push("/sign");
   };
 
-  useEffect(() => {
-    const storedUsername = sessionStorage.getItem("username");
-    const storedRole = sessionStorage.getItem("role");
-
-    if (!storedUsername || storedRole !== "admin") {
-      router.push("/");
-    } else {
-      setUsername(storedUsername);
-    }
-  }, [router]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const resQuery = query(
-          collection(pool, "phq9_results"),
-          orderBy("created_at", "desc")
-        );
-        const resSnap = await getDocs(resQuery);
-        const allResults = resSnap.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            username: data.username,
-            total_score: data.total_score,
-            severity: data.severity,
-            created_at: data.created_at,
-          } as Result;
-        });
-
-        setResults(allResults);
-        setFilteredResults(allResults);
-
-        const userSnap = await getDocs(collection(db, "users"));
-        const allUsers = userSnap.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            email: data.email,
-            role: data.role,
-            fullname: data.fullname,
-          } as User;
-        });
-
-        setUsers(allUsers);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching admin data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    let filtered = results;
-    if (searchTerm) {
-      filtered = filtered.filter((res) =>
-        res.username.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (severityFilter !== "All") {
-      filtered = filtered.filter((res) => res.severity === severityFilter);
-    }
-
-    setFilteredResults(filtered);
-  }, [searchTerm, severityFilter, results]);
-
-  const exportToCSV = () => {
-    const header = ["Username", "Total Score", "Severity", "Date"];
-    const rows = filteredResults.map((res) => [
-      res.username,
-      res.total_score,
-      res.severity,
-      res.created_at.toDate().toLocaleString(),
-    ]);
-    const csv = [header, ...rows].map((r) => r.join(",")).join("\n");
-
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "phq9_results.csv";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   return (
-    <div className="min-h-screen bg-blue-50 p-8">
-      <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
-        {/* Header with Log Out */}
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-6xl mx-auto bg-white rounded shadow-md p-6">
         <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-blue-800">Admin Dashboard</h1>
-            <p className="text-gray-700">Welcome, <strong>{username}</strong>!</p>
+          <h2 className="text-2xl font-bold">Examinations</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowModal(true)}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Add Exam
+            </button>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+              Log Out
+            </button>
           </div>
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-          >
-            Log Out
-          </button>
         </div>
 
-        {/* Filters and Export */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full border border-gray-300 table-auto">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="border px-4 py-2">Exam Code</th>
+                <th className="border px-4 py-2">Examination Title</th>
+                <th className="border px-4 py-2">Severity</th>
+                <th className="border px-4 py-2">Total Examinees</th>
+                <th className="border px-4 py-2">Exam Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {exams.map((exam, index) => (
+                <tr key={index}>
+                  <td className="border px-4 py-2">{exam.exam_code}</td>
+                  <td className="border px-4 py-2 ">
+                    <Link href={`/admin/examinees/${exam.exam_code}`}>
+                      {exam.title}
+                    </Link>
+                  </td>
+                  <td className="border px-4 py-2">{exam.severity}</td>
+                  <td className="border px-4 py-2">{exam.total_examinees}</td>
+                  <td className="border px-4 py-2">{exam.exam_date}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {/* Questions Table Section */}
+<div className="mt-10">
+  <div className="flex justify-between items-center mb-4">
+  <h3 className="text-xl font-semibold">Mental Health Questions</h3>
+  <button
+    onClick={() => setShowQuestionModal(true)}
+    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+  >
+    Add Question
+  </button>
+</div>
+
+  
+  <div className="overflow-x-auto">
+    <table className="w-full border border-gray-300 table-auto">
+      <thead className="bg-gray-100">
+        <tr>
+          <th className="border px-4 py-2">Category</th>
+          <th className="border px-4 py-2">Questions</th>
+          <th className="border px-4 py-2">Choices</th>
+          <th className="border px-4 py-2">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <td className="border px-4 py-2" rowSpan={9}>Cognitive Functioning</td>
+        {/* Question 1 */}
+        <tr>
+          
+          <td className="border px-4 py-2" rowSpan={4}>
+            Do you often find it difficult to concentrate on tasks?
+          </td>
+          <td className="border px-4 py-2">Never</td>
+          <td className="border px-4 py-2">4</td>
+        </tr>
+        <tr>
+          <td className="border px-4 py-2">Rarely</td>
+          <td className="border px-4 py-2">3</td>
+        </tr>
+        <tr>
+          <td className="border px-4 py-2">Sometimes</td>
+          <td className="border px-4 py-2">2</td>
+        </tr>
+        <tr>
+          <td className="border px-4 py-2">Often</td>
+          <td className="border px-4 py-2">1</td>
+        </tr>
+          
+        {/* Question 2 */}
+        <tr>
+          <td className="border px-4 py-2" rowSpan={4}>
+            How often do you forget tasks or miss deadlines?
+          </td>
+          <td className="border px-4 py-2">Never</td>
+          <td className="border px-4 py-2">4</td>
+        </tr>
+        <tr>
+          <td className="border px-4 py-2">Rarely</td>
+          <td className="border px-4 py-2">3</td>
+        </tr>
+        <tr>
+          <td className="border px-4 py-2">Sometimes</td>
+          <td className="border px-4 py-2">2</td>
+        </tr>
+        <tr>
+          <td className="border px-4 py-2">Often</td>
+          <td className="border px-4 py-2">1</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+      </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
+            <h3 className="text-xl font-semibold mb-4">Add Examination</h3>
+
+            <div className="mb-4">
+              <label className="block mb-1 text-sm">Examination Title</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full border p-2 rounded"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block mb-1 text-sm">Exam Date</label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full border p-2 rounded"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 border rounded hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddExam}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showQuestionModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded shadow-md w-full max-w-lg">
+      <h3 className="text-xl font-semibold mb-4">Add Mental Health Question</h3>
+
+      <div className="mb-4">
+  <label className="block mb-1 text-sm">Category</label>
+  <input
+    type="text"
+    value={categoryName}
+    onChange={(e) => setCategoryName(e.target.value)}
+    className="w-full border p-2 rounded"
+    placeholder="Enter category name"
+  />
+</div>
+
+
+      <div className="mb-4">
+        <label className="block mb-1 text-sm">Question</label>
+        <input
+          type="text"
+          value={questionText}
+          onChange={(e) => setQuestionText(e.target.value)}
+          className="w-full border p-2 rounded"
+        />
+      </div>
+
+      {choices.map((choice, i) => (
+        <div className="flex gap-2 mb-2" key={i}>
           <input
             type="text"
-            placeholder="Search by username"
-            className="p-2 border rounded w-full md:w-1/3"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder={`Choice ${i + 1}`}
+            value={choice}
+            onChange={(e) => {
+              const newChoices = [...choices];
+              newChoices[i] = e.target.value;
+              setChoices(newChoices);
+            }}
+            className="w-3/4 border p-2 rounded"
           />
-          <select
-            className="p-2 border rounded w-full md:w-1/4"
-            value={severityFilter}
-            onChange={(e) => setSeverityFilter(e.target.value)}
-          >
-            <option value="All">All Severities</option>
-            <option value="Minimal depression">Minimal depression</option>
-            <option value="Mild depression">Mild depression</option>
-            <option value="Moderate depression">Moderate depression</option>
-            <option value="Moderately severe depression">Moderately severe depression</option>
-            <option value="Severe depression">Severe depression</option>
-          </select>
-          <button
-            onClick={exportToCSV}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Export CSV
-          </button>
+          <input
+            type="number"
+            placeholder="Value"
+            value={values[i]}
+            onChange={(e) => {
+              const newValues = [...values];
+              newValues[i] = Number(e.target.value);
+              setValues(newValues);
+            }}
+            className="w-1/4 border p-2 rounded"
+          />
         </div>
+      ))}
 
-        {/* PHQ-9 Results Table */}
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <>
-            <div className="overflow-x-auto mb-12">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                PHQ-9 Submissions
-              </h2>
-              <table className="w-full table-auto border border-gray-300">
-                <thead className="bg-blue-100">
-                  <tr>
-                    <th className="border px-4 py-2">Username</th>
-                    <th className="border px-4 py-2">Score</th>
-                    <th className="border px-4 py-2">Severity</th>
-                    <th className="border px-4 py-2">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredResults.map((result) => (
-                    <tr key={result.id}>
-                      <td className="border px-4 py-2">{result.username}</td>
-                      <td className="border px-4 py-2">{result.total_score}</td>
-                      <td className="border px-4 py-2">{result.severity}</td>
-                      <td className="border px-4 py-2">
-                        {result.created_at.toDate().toLocaleString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+      <div className="flex justify-end space-x-2 mt-4">
+        <button
+          onClick={() => setShowQuestionModal(false)}
+          className="px-4 py-2 border rounded hover:bg-gray-100"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={async () => {
+            if (!categoryName || !questionText || choices.some(c => !c)) return;
+            try {
+              const res = await fetch("/api/questions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  category_id: selectedCategoryId,
+                  question_text: questionText,
+                  choices: choices.map((text, i) => ({
+                    text,
+                    value: values[i],
+                  })),
+                }),
+              });
 
-            {/* Registered Users Table */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                Registered Users
-              </h2>
-              <table className="w-full table-auto border border-gray-300">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="border px-4 py-2">Full Name</th>
-                    <th className="border px-4 py-2">Email</th>
-                    <th className="border px-4 py-2">Role</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((user) => (
-                    <tr key={user.id}>
-                      <td className="border px-4 py-2">{user.fullname}</td>
-                      <td className="border px-4 py-2">{user.email}</td>
-                      <td className="border px-4 py-2">{user.role}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
+              const result = await res.json();
+              console.log("Result:", result);
+
+              setSelectedCategoryId(null);
+              setQuestionText("");
+              setChoices(["", "", "", ""]);
+              setValues([0, 0, 0, 0]);
+              setShowQuestionModal(false);
+            } catch (err) {
+              console.error("Failed to submit question:", err);
+            }
+          }}
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          Add
+        </button>
       </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
 
-export default AdminPage;
+export default AdminExamTable;

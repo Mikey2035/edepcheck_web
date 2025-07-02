@@ -9,11 +9,13 @@ const SignUp: React.FC = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
     fullName: '',
-    email: '',
-    username: '',
+    email: '', // ✅ added
     password: '',
     confirmPassword: '',
+    division: '',
+    position: '',
   });
+
   const [statusMessage, setStatusMessage] = useState('');
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -21,42 +23,35 @@ const SignUp: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    if (
-      !formData.fullName ||
-      !formData.email ||
-      !formData.username ||
-      !formData.password ||
-      !formData.confirmPassword
-    ) {
+
+    const { fullName, email, password, confirmPassword, division, position } = formData;
+
+    if (!fullName || !email || !password || !confirmPassword || !division || !position) {
       setStatusMessage('Please fill in all fields.');
       setIsSuccessful(false);
       return;
     }
-  
-    if (formData.password !== formData.confirmPassword) {
+
+    if (password !== confirmPassword) {
       setStatusMessage('Passwords do not match.');
       setIsSuccessful(false);
       return;
     }
-  
+
     try {
       const res = await fetch('/api/signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fullName, email, password, division, position }),
       });
-  
+
       const data = await res.json();
       if (!res.ok) {
-        console.error('API error:', data.message);
         setStatusMessage(data.message || 'Something went wrong.');
         setIsSuccessful(false);
       } else {
@@ -72,16 +67,16 @@ const SignUp: React.FC = () => {
       setFormData({
         fullName: '',
         email: '',
-        username: '',
         password: '',
         confirmPassword: '',
+        division: '',
+        position: '',
       });
     }
   };
-  
 
   const handleLogIn = () => {
-    router.push('/login');
+    router.push('/sign/login');
   };
 
   return (
@@ -95,10 +90,9 @@ const SignUp: React.FC = () => {
 
         <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
           <form onSubmit={handleSubmit}>
+            {/* Full Name */}
             <div className="mb-4">
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
-                Full Name
-              </label>
+              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Full Name</label>
               <input
                 type="text"
                 id="fullName"
@@ -109,10 +103,10 @@ const SignUp: React.FC = () => {
                 required
               />
             </div>
+
+            {/* Email */}
             <div className="mb-4">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
               <input
                 type="email"
                 id="email"
@@ -123,24 +117,38 @@ const SignUp: React.FC = () => {
                 required
               />
             </div>
+
+            {/* Division */}
             <div className="mb-4">
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                Username
-              </label>
+              <label htmlFor="division" className="block text-sm font-medium text-gray-700">Division</label>
               <input
                 type="text"
-                id="username"
-                name="username"
-                value={formData.username}
+                id="division"
+                name="division"
+                value={formData.division}
                 onChange={handleChange}
                 className="block w-full p-2 text-sm border rounded-md"
                 required
               />
             </div>
+
+            {/* Position */}
+            <div className="mb-4">
+              <label htmlFor="position" className="block text-sm font-medium text-gray-700">Position</label>
+              <input
+                type="text"
+                id="position"
+                name="position"
+                value={formData.position}
+                onChange={handleChange}
+                className="block w-full p-2 text-sm border rounded-md"
+                required
+              />
+            </div>
+
+            {/* Password */}
             <div className="mb-4 relative">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
               <input
                 type={passwordVisible ? 'text' : 'password'}
                 id="password"
@@ -158,10 +166,10 @@ const SignUp: React.FC = () => {
                 {passwordVisible ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
+
+            {/* Confirm Password */}
             <div className="mb-4 relative">
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password
-              </label>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
               <input
                 type={confirmPasswordVisible ? 'text' : 'password'}
                 id="confirmPassword"
@@ -180,6 +188,7 @@ const SignUp: React.FC = () => {
               </button>
             </div>
 
+            {/* Status Message */}
             {statusMessage && (
               <div className={`mb-4 text-sm ${isSuccessful ? 'text-green-500' : 'text-red-500'}`}>
                 {statusMessage}
@@ -193,9 +202,6 @@ const SignUp: React.FC = () => {
               Sign Up
             </button>
           </form>
-
-          <div className="text-center my-4 text-gray-500 text-sm">or Sign in with</div>
-          
 
           <div className="text-center mt-6 text-sm">
             Already have an account?{' '}

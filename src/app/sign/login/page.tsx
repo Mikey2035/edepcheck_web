@@ -5,11 +5,10 @@ import { useRouter } from 'next/navigation';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import MainLayout from '@/components/layout/MainLayout';
 
-
 const LogIn: React.FC = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    identifier: '',
+    email: '',
     password: '',
   });
   const [statusMessage, setStatusMessage] = useState('');
@@ -24,7 +23,7 @@ const LogIn: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.identifier || !formData.password) {
+    if (!formData.email || !formData.password) {
       setStatusMessage("Please fill in both fields.");
       setIsSuccessful(false);
       return;
@@ -47,7 +46,8 @@ const LogIn: React.FC = () => {
         setStatusMessage("Login successful!");
         setIsSuccessful(true);
 
-        sessionStorage.setItem("username", data.user.username);
+        sessionStorage.setItem("email", data.user.email);
+        sessionStorage.setItem("fullName", data.user.fullname); // still stored if needed
         sessionStorage.setItem("role", data.user.role);
 
         if (data.user.role === "admin") {
@@ -63,8 +63,6 @@ const LogIn: React.FC = () => {
     }
   };
 
-  
-
   return (
     <MainLayout>
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-center px-4">
@@ -76,20 +74,23 @@ const LogIn: React.FC = () => {
 
         <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
           <form onSubmit={handleSubmit}>
+            {/* Email Input */}
             <div className="mb-4">
-              <label htmlFor="identifier" className="block text-sm font-medium text-gray-700">
-                Username or Email
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email
               </label>
               <input
-                type="text"
-                id="identifier"
-                name="identifier"
-                value={formData.identifier}
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
                 className="block w-full p-2 text-sm border rounded-md"
                 required
               />
             </div>
+
+            {/* Password Input */}
             <div className="mb-4 relative">
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
@@ -112,6 +113,7 @@ const LogIn: React.FC = () => {
               </button>
             </div>
 
+            {/* Status Message */}
             {statusMessage && (
               <div className={`mb-4 text-sm ${isSuccessful ? 'text-green-500' : 'text-red-500'}`}>
                 {statusMessage}
@@ -125,11 +127,9 @@ const LogIn: React.FC = () => {
               Log In
             </button>
           </form>
-          <div className="text-center my-4 text-gray-500 text-sm">or Sign in with</div>
-          
 
           <div className="text-center mt-6 text-sm">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <button
               onClick={() => router.push('/sign/signup')}
               className="text-blue-500 hover:underline font-medium"
