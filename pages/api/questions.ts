@@ -21,7 +21,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (existingCategory.length > 0) {
         categoryId = existingCategory[0].id;
       } else {
-        // 2. Insert category
         const [catResult]: any = await pool.query(
           'INSERT INTO categories (name, created_at) VALUES (?, NOW())',
           [category_name]
@@ -29,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         categoryId = catResult.insertId;
       }
 
-      // 3. Insert question
+      // 2. Insert question
       const [questionResult]: any = await pool.query(
         'INSERT INTO questions (category_id, text, created_at) VALUES (?, ?, NOW())',
         [categoryId, question_text]
@@ -37,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const questionId = questionResult.insertId;
 
-      // 4. Insert choices
+      // 3. Insert choices
       for (const choice of choices) {
         await pool.query(
           'INSERT INTO choices (question_id, text, value, created_at) VALUES (?, ?, ?, NOW())',
@@ -50,8 +49,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.error('Insert error:', err);
       return res.status(500).json({ error: 'Insert failed' });
     }
+
+  } else if (req.method === 'GET') {
+    try {
+      const [rows]: any = await pool.query(`
+        SELECT 
+          q.id AS question_id,
+          q.text AS question_text,
+          c.name AS category_name,
+          ch.text AS choice_text,
+          ch.value AS choice_value
+        FROM questions q
+        JOIN categories c ON q.category_id = c.id
+        JOIN choices ch ON ch.question_id = q.id
+        ORDER BY q.id, ch.id
+      `);
+
+      res.status(200).json(rows);
+    } catch (err) {
+      console.error('Fetch error:', err);
+      res.status(500).json({ error: 'Failed to fetch questions' });
+    }
+
   } else {
-    res.setHeader('Allow', ['POST']);
+    res.setHeader('Allow', ['POST', 'GET']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }

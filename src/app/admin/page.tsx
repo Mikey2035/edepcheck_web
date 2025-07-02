@@ -26,9 +26,41 @@ const [choices, setChoices] = useState(["", "", "", ""]);
 const [values, setValues] = useState([0, 0, 0, 0]);
 
 
-  useEffect(() => {
+  const [questionsData, setQuestionsData] = useState<any[]>([]);
+
+useEffect(() => {
   fetchExams();
+  fetchQuestions();
 }, []);
+
+const fetchQuestions = async () => {
+  try {
+    const response = await fetch("/api/questions");
+    const data = await response.json();
+
+    // Group by question
+    const grouped = data.reduce((acc: any, curr: any) => {
+      const key = curr.question_id;
+      if (!acc[key]) {
+        acc[key] = {
+          category: curr.category_name,
+          question: curr.question_text,
+          choices: [],
+        };
+      }
+      acc[key].choices.push({
+        text: curr.choice_text,
+        value: curr.choice_value,
+      });
+      return acc;
+    }, {});
+
+    setQuestionsData(Object.values(grouped));
+  } catch (err) {
+    console.error("Failed to fetch questions:", err);
+  }
+};
+
 
 
 
@@ -134,76 +166,47 @@ const [values, setValues] = useState([0, 0, 0, 0]);
           </table>
         </div>
         {/* Questions Table Section */}
-<div className="mt-10">
+        <div className="mt-10">
   <div className="flex justify-between items-center mb-4">
-  <h3 className="text-xl font-semibold">Mental Health Questions</h3>
-  <button
-    onClick={() => setShowQuestionModal(true)}
-    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-  >
-    Add Question
-  </button>
-</div>
+    <h3 className="text-xl font-semibold">Mental Health Questions</h3>
+    <button
+      onClick={() => setShowQuestionModal(true)}
+      className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+    >
+      Add Question
+    </button>
+  </div>
 
-  
   <div className="overflow-x-auto">
     <table className="w-full border border-gray-300 table-auto">
       <thead className="bg-gray-100">
         <tr>
           <th className="border px-4 py-2">Category</th>
-          <th className="border px-4 py-2">Questions</th>
-          <th className="border px-4 py-2">Choices</th>
+          <th className="border px-4 py-2">Question</th>
+          <th className="border px-4 py-2">Choice</th>
           <th className="border px-4 py-2">Value</th>
         </tr>
       </thead>
       <tbody>
-        <td className="border px-4 py-2" rowSpan={9}>Cognitive Functioning</td>
-        {/* Question 1 */}
-        <tr>
-          
-          <td className="border px-4 py-2" rowSpan={4}>
-            Do you often find it difficult to concentrate on tasks?
-          </td>
-          <td className="border px-4 py-2">Never</td>
-          <td className="border px-4 py-2">4</td>
-        </tr>
-        <tr>
-          <td className="border px-4 py-2">Rarely</td>
-          <td className="border px-4 py-2">3</td>
-        </tr>
-        <tr>
-          <td className="border px-4 py-2">Sometimes</td>
-          <td className="border px-4 py-2">2</td>
-        </tr>
-        <tr>
-          <td className="border px-4 py-2">Often</td>
-          <td className="border px-4 py-2">1</td>
-        </tr>
-          
-        {/* Question 2 */}
-        <tr>
-          <td className="border px-4 py-2" rowSpan={4}>
-            How often do you forget tasks or miss deadlines?
-          </td>
-          <td className="border px-4 py-2">Never</td>
-          <td className="border px-4 py-2">4</td>
-        </tr>
-        <tr>
-          <td className="border px-4 py-2">Rarely</td>
-          <td className="border px-4 py-2">3</td>
-        </tr>
-        <tr>
-          <td className="border px-4 py-2">Sometimes</td>
-          <td className="border px-4 py-2">2</td>
-        </tr>
-        <tr>
-          <td className="border px-4 py-2">Often</td>
-          <td className="border px-4 py-2">1</td>
-        </tr>
+        {questionsData.map((q, idx) => (
+          q.choices.map((choice: any, i: number) => (
+            <tr key={`${idx}-${i}`}>
+              {i === 0 && (
+                <>
+                  <td className="border px-4 py-2" rowSpan={q.choices.length}>{q.category}</td>
+                  <td className="border px-4 py-2" rowSpan={q.choices.length}>{q.question}</td>
+                </>
+              )}
+              <td className="border px-4 py-2">{choice.text}</td>
+              <td className="border px-4 py-2">{choice.value}</td>
+            </tr>
+          ))
+        ))}
       </tbody>
     </table>
   </div>
 </div>
+
 
       </div>
 
@@ -320,13 +323,14 @@ const [values, setValues] = useState([0, 0, 0, 0]);
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                  category_id: selectedCategoryId,
-                  question_text: questionText,
-                  choices: choices.map((text, i) => ({
-                    text,
-                    value: values[i],
-                  })),
-                }),
+  category_name: categoryName,
+  question_text: questionText,
+  choices: choices.map((text, i) => ({
+    text,
+    value: values[i],
+  })),
+}),
+
               });
 
               const result = await res.json();
