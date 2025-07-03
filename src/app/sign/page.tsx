@@ -1,60 +1,157 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import MainLayout from '@/components/layout/MainLayout';
+import Image from "next/image";
 
 
-export default function Home() {
+const LogIn: React.FC = () => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    identifier: '',
+    password: '',
+  });
+  const [statusMessage, setStatusMessage] = useState('');
+  const [isSuccessful, setIsSuccessful] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.identifier || !formData.password) {
+      setStatusMessage("Please fill in both fields.");
+      setIsSuccessful(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setStatusMessage(data.message || "Something went wrong.");
+        setIsSuccessful(false);
+      } else {
+        setStatusMessage("Login successful!");
+        setIsSuccessful(true);
+
+        sessionStorage.setItem("username", data.user.username);
+        sessionStorage.setItem("role", data.user.role);
+
+        if (data.user.role === "admin") {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+      setStatusMessage("An error occurred. Please try again.");
+      setIsSuccessful(false);
+    }
+  };
 
   
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 via-white to-blue-100 text-gray-800 px-4">
-      <header className="flex flex-col items-center mb-8 text-center">
-        <img
-          src="/images/circo logo.png"
-          alt="Platform Logo"
-          className="h-24 w-24 sm:h-32 sm:w-32 object-contain mb-4"
-        />
-        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-900 mb-2">
-          E-DEPCHECK
-        </h1>
-        <p className="text-sm sm:text-lg text-gray-600 max-w-lg">
-          Your Mental Health Matters
-        </p>
-      </header>
-
-      <div className="w-full max-w-md bg-white p-6 sm:p-8 rounded-2xl shadow-xl space-y-6">
-
-        <div className="flex items-center text-gray-400">
-          <div className="border-t w-full border-gray-300"></div>
-          <span className="mx-4 text-sm sm:text-base">or</span>
-          <div className="border-t w-full border-gray-300"></div>
+    <MainLayout>
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-center px-4">
+        <div className="text-center mb-6 group cursor-pointer">
+          <div className="flex flex-col items-center justify-center">
+            <Image
+              src="/images/w.png"
+              alt="E-DepCheck Logo"
+              width={80}
+              height={80}
+              className="transition-transform duration-300 group-hover:scale-110"
+            />
+            <h1 className="text-4xl font-bold text-gray-800 mt-2 transition-transform duration-300 group-hover:scale-110">
+              Log In
+            </h1>
+          </div>
+          <p className="text-gray-600 mt-2">Welcome back! Please log in to continue.</p>
         </div>
 
-        <div className="flex flex-col space-y-4">
-          <Link
-            href="/sign/login"
-            className="block w-full text-center bg-blue-500 hover:bg-blue-600 text-white text-base sm:text-lg font-semibold py-3 rounded-lg transition-all duration-200"
-          >
-            Login
-          </Link>
+        <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label htmlFor="identifier" className="block text-sm font-medium text-gray-700">
+                Username or Email
+              </label>
+              <input
+                type="text"
+                id="identifier"
+                name="identifier"
+                value={formData.identifier}
+                onChange={handleChange}
+                className="block w-full p-2 text-sm border rounded-md"
+                required
+              />
+            </div>
+            <div className="mb-4 relative">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <input
+                type={passwordVisible ? 'text' : 'password'}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="block w-full p-2 text-sm border rounded-md"
+                required
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-2 flex items-center text-gray-500"
+                onClick={() => setPasswordVisible(!passwordVisible)}
+              >
+                {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
 
-          <Link
-            href="/sign/signup"
-            className="block w-full text-center bg-green-500 hover:bg-green-600 text-white text-base sm:text-lg font-semibold py-3 rounded-lg transition-all duration-200"
-          >
-            Sign Up
-          </Link>
+            {statusMessage && (
+              <div className={`mb-4 text-sm ${isSuccessful ? 'text-green-500' : 'text-red-500'}`}>
+                {statusMessage}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md w-full"
+            >
+              Log In
+            </button>
+          </form>
+          <div className="text-center my-4 text-gray-500 text-sm">or Sign in with</div>
+          
+
+          <div className="text-center mt-6 text-sm">
+            Don't have an account?{' '}
+            <button
+              onClick={() => router.push('/signup')}
+              className="text-blue-500 hover:underline font-medium"
+            >
+              Sign Up
+            </button>
+          </div>
         </div>
       </div>
-
-      <footer className="mt-8 sm:mt-12 text-xs sm:text-sm text-gray-500 text-center">
-        Made with ❤️ by MMK Team
-      </footer>
-    </main>
+    </MainLayout>
   );
-}
+};
+
+export default LogIn;
