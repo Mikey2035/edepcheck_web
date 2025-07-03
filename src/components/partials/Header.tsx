@@ -16,16 +16,31 @@ import {
 
 const Header: React.FC = () => {
   const [isProfileDropdownVisible, setIsProfileDropdownVisible] = useState(false);
-  const [username, setUsername] = useState<string | null>(null);
+  const [fullName, setFullName] = useState<string | null>(null);
+  const [examCode, setExamCode] = useState<string | null>(null);
 
   useEffect(() => {
-    const savedUsername = sessionStorage.getItem("username");
-    if (savedUsername) setUsername(savedUsername);
+    const savedFullName = sessionStorage.getItem("fullName");
+    if (savedFullName) setFullName(savedFullName);
+
+    const fetchLatestExam = async () => {
+      try {
+        const res = await fetch("/api/exams?latest=true");
+        const data = await res.json();
+        if (data && data.exam_code) {
+          setExamCode(data.exam_code);
+        }
+      } catch (err) {
+        console.error("Failed to fetch latest exam:", err);
+      }
+    };
+
+    fetchLatestExam();
   }, []);
 
   const handleLogout = () => {
-    sessionStorage.removeItem("username");
-    setUsername(null);
+    sessionStorage.clear();
+    setFullName(null);
     window.location.href = "/sign";
   };
 
@@ -45,26 +60,61 @@ const Header: React.FC = () => {
       <nav>
         <ul className="flex gap-4 items-center text-blue-900 font-medium">
           {/* Reusable Nav Item */}
-          {[
-            { href: "/", label: "Home", icon: <FaHome /> },
-            { href: "/pages/questionnaire", label: "Assessment", icon: <FaClipboardCheck /> },
-            { href: "/pages/history", label: "History", icon: <FaHistory /> },
-            { href: "/pages/learnmore", label: "Learn", icon: <FaInfoCircle /> },
-            { href: "/pages/resources", label: "Resources", icon: <FaBook /> },
-          ].map(({ href, label, icon }) => (
-            <li key={label}>
+          <li>
+            <Link
+              href="/"
+              className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm hover:bg-blue-200 transition-transform duration-300 transform hover:scale-105"
+            >
+              <FaHome className="text-blue-800" />
+              <span className="font-semibold">Home</span>
+            </Link>
+          </li>
+          <li>
+            {examCode ? (
               <Link
-                href={href}
+                href={`/pages/questionnaire?exam=${examCode}`}
                 className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm hover:bg-blue-200 transition-transform duration-300 transform hover:scale-105"
               >
-                <span className="text-blue-800">{icon}</span>
-                <span className="font-semibold">{label}</span>
+                <FaClipboardCheck className="text-blue-800" />
+                <span className="font-semibold">Assessment</span>
               </Link>
-            </li>
-          ))}
+            ) : (
+              <span className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm text-gray-400 cursor-not-allowed">
+                <FaClipboardCheck />
+                Assessment
+              </span>
+            )}
+          </li>
+          <li>
+            <Link
+              href="/pages/history"
+              className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm hover:bg-blue-200 transition-transform duration-300 transform hover:scale-105"
+            >
+              <FaHistory className="text-blue-800" />
+              <span className="font-semibold">History</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/pages/learnmore"
+              className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm hover:bg-blue-200 transition-transform duration-300 transform hover:scale-105"
+            >
+              <FaInfoCircle className="text-blue-800" />
+              <span className="font-semibold">Learn</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/pages/resources"
+              className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm hover:bg-blue-200 transition-transform duration-300 transform hover:scale-105"
+            >
+              <FaBook className="text-blue-800" />
+              <span className="font-semibold">Resources</span>
+            </Link>
+          </li>
 
           {/* Profile/Login */}
-          {username ? (
+          {fullName ? (
             <li className="relative">
               <button
                 onClick={toggleDropdown}
@@ -76,9 +126,14 @@ const Header: React.FC = () => {
 
               {isProfileDropdownVisible && (
                 <div className="absolute right-0 top-full mt-2 bg-white shadow-lg rounded-md w-48 py-2 animate-fade-in z-50">
-                  <div className="px-4 py-2 text-gray-700 border-b">
-                    {username}
-                  </div>
+                  <div className="px-4 py-2 text-gray-700 border-b">{fullName}</div>
+                  <Link
+                    href="/pages/profile"
+                    className="flex items-center gap-2 text-blue-600 hover:underline px-4 py-2 w-full"
+                  >
+                    <FaUserCircle />
+                    View Profile
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="flex items-center gap-2 text-blue-600 hover:underline px-4 py-2 w-full text-left"
