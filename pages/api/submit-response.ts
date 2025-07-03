@@ -1,56 +1,61 @@
+import { pool } from "@/configs/database";
 import { NextApiRequest, NextApiResponse } from "next";
-import { pool } from "@/configs/database"; // adjust path to your db connection
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") return res.status(405).end();
-
-  const {
-    user_id,
-    exam_code,
-    total_score,
-    severity,
-    answers, // array of { question_id, choice_id }
-  } = req.body;
-
-  if (!user_id || !exam_code || !answers || answers.length === 0) {
-    return res.status(400).json({ error: "Missing required fields." });
+  if (req.method !== "POST") {
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
-  const conn = await pool.getConnection();
-  await conn.beginTransaction();
+  const { fullName, examCode, totalScore, severity, answers } = req.body;
+
+  if (!fullName || !examCode || totalScore === undefined || !severity || !Array.isArray(answers)) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+
+  const connection = await pool.getConnection();
+  await connection.beginTransaction();
 
   try {
-    const submitted_at = new Date();
+    // 1. Get user ID
+    const [userRows]: any = await connection.query("SELECT id FROM users WHERE fullname = ?", [fullName]);
+    if (userRows.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: "User not found" });
+    }
+    const userId = userRows[0].id;
 
-    // 1. Insert to `responses` table
-    const [responseResult]: any = await conn.query(
-      `INSERT INTO responses (user_id, exam_code_id, total_score, severity, submitted_at)
-       VALUES (?, ?, ?, ?, ?)`,
-      [user_id, exam_code, total_score, severity, submitted_at]
+    // 2. Get exam ID
+    const [examRows]: any = await connection.query("SELECT id FROM tb_exam WHERE exam_code = ?", [examCode]);
+    if (examRows.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: "Exam not found" });
+    }
+    const examId = examRows[0].id;
+
+    // 3. Insert into responses table
+    const [responseResult]: any = await connection.query(
+      "INSERT INTO responses (user_id, exam_code_id, total_score, severity, submitted_at) VALUES (?, ?, ?, ?, NOW())",
+      [userId, examId, totalScore, severity]
     );
+    const responseId = responseResult.insertId;
 
-    const response_id = responseResult.insertId;
-
-    // 2. Insert each answer to `user_response_details`
+    // 4. Insert into user_responses_details table
     for (const answer of answers) {
-      const { question_id, choice_id } = answer;
+      const { choiceId } = answer;
+      await connection.query(
+  "INSERT INTO user_responses_details (user_id, question_id, choice_id, exam_code_id, response_id, submitted_at) VALUES (?, ?, ?, ?, ?, NOW())",
+  [userId, answer.questionId, answer.choiceId, examId, responseId]
+);
 
-      await conn.query(
-        `INSERT INTO user_response_details 
-          (user_id, question_id, choice_id, exam_code, response_id, submitted_at)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [user_id, question_id, choice_id, exam_code, response_id, submitted_at]
-      );
     }
 
-    await conn.commit();
-    conn.release();
-
-    return res.status(200).json({ message: "Responses saved successfully." });
-  } catch (error) {
-    await conn.rollback();
-    conn.release();
-    console.error("Error saving responses:", error);
-    return res.status(500).json({ error: "Failed to save responses." });
+    await connection.commit();
+    return res.status(201).json({ message: "Responses saved successfully" });
+  } catch (err) {
+    await connection.rollback();
+    console.error("Error saving result:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  } finally {
+    connection.release();
   }
 }
