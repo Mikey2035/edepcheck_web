@@ -1,17 +1,18 @@
 "use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import MainLayout from '@/components/layout/MainLayout';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import MainLayout from "@/components/layout/MainLayout";
+import Image from "next/image";
 
 const LogIn: React.FC = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
-  const [statusMessage, setStatusMessage] = useState('');
+  const [statusMessage, setStatusMessage] = useState("");
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
 
@@ -47,7 +48,7 @@ const LogIn: React.FC = () => {
         setIsSuccessful(true);
 
         sessionStorage.setItem("email", data.user.email);
-        sessionStorage.setItem("fullName", data.user.fullname); // still stored if needed
+        sessionStorage.setItem("fullName", data.user.fullname);
         sessionStorage.setItem("role", data.user.role);
 
         if (data.user.role === "admin") {
@@ -66,9 +67,19 @@ const LogIn: React.FC = () => {
   return (
     <MainLayout>
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-center px-4">
-        <div className="text-center mb-6">
-          <img src="/images/circo logo.png" alt="E-DepCheck Logo" className="h-20 mx-auto mb-4" />
-          <h1 className="text-4xl font-bold text-gray-800">Log In</h1>
+        <div className="text-center mb-6 group cursor-pointer">
+          <div className="flex flex-col items-center justify-center">
+            <Image
+              src="/images/w.png"
+              alt="E-DepCheck Logo"
+              width={80}
+              height={80}
+              className="transition-transform duration-300 group-hover:scale-110"
+            />
+            <h1 className="text-4xl font-bold text-gray-800 mt-2 transition-transform duration-300 group-hover:scale-110">
+              Log In
+            </h1>
+          </div>
           <p className="text-gray-600 mt-2">Welcome back! Please log in to continue.</p>
         </div>
 
@@ -96,7 +107,7 @@ const LogIn: React.FC = () => {
                 Password
               </label>
               <input
-                type={passwordVisible ? 'text' : 'password'}
+                type={passwordVisible ? "text" : "password"}
                 id="password"
                 name="password"
                 value={formData.password}
@@ -115,7 +126,7 @@ const LogIn: React.FC = () => {
 
             {/* Status Message */}
             {statusMessage && (
-              <div className={`mb-4 text-sm ${isSuccessful ? 'text-green-500' : 'text-red-500'}`}>
+              <div className={`mb-4 text-sm ${isSuccessful ? "text-green-500" : "text-red-500"}`}>
                 {statusMessage}
               </div>
             )}
@@ -129,9 +140,9 @@ const LogIn: React.FC = () => {
           </form>
 
           <div className="text-center mt-6 text-sm">
-            Don&apos;t have an account?{' '}
+            Don&apos;t have an account?{" "}
             <button
-              onClick={() => router.push('/sign/signup')}
+              onClick={() => router.push("/signup")}
               className="text-blue-500 hover:underline font-medium"
             >
               Sign Up
