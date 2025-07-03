@@ -25,12 +25,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const userId = userRows[0].id;
 
     // 2. Get exam ID
-    const [examRows]: any = await connection.query("SELECT id FROM tb_exam WHERE exam_code = ?", [examCode]);
-    if (examRows.length === 0) {
-      await connection.rollback();
-      return res.status(404).json({ error: "Exam not found" });
-    }
-    const examId = examRows[0].id;
+const [examRows]: any = await connection.query(
+  "SELECT id FROM tb_exam WHERE exam_code = ? AND exam_code IS NOT NULL ORDER BY exam_date DESC LIMIT 1",
+  [examCode]
+);
+  
+
+if (examRows.length === 0) {
+  await connection.rollback();
+  return res.status(404).json({ error: "Exam not found" });
+}
+const examId = examRows[0].id;
+
 
     // 3. Insert into responses table
     const [responseResult]: any = await connection.query(

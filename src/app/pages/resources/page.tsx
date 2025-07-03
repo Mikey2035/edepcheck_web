@@ -2,7 +2,9 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { FaHeartbeat, FaPhone, FaExternalLinkAlt, FaArrowLeft } from "react-icons/fa";
+import { FaHeartbeat, FaPhone, FaExternalLinkAlt, FaArrowLeft, FaInfoCircle } from "react-icons/fa";
+import Image from "next/image";
+import Header from "@/components/partials/Header";
 
 const resources = [
   {
@@ -34,59 +36,66 @@ const resources = [
   },
 ];
 
+const resourceImages = [
+  "/images/s.png",
+  "/images/s.png",
+  "/images/s.png",
+  "/images/s.png",
+];
+
 export default function ResourcesPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-blue-50 py-10 px-4">
-      <div className="max-w-4xl mx-auto">
-        <button
-          onClick={() => router.push("/")}
-          className="mb-6 inline-flex items-center text-blue-600 hover:underline"
-        >
-          <FaArrowLeft className="mr-2" />
-          
-        </button>
+    <>
+      <Header />
+      <div className="min-h-screen bg-blue-50 py-10 px-4">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-5xl sm:text-6xl font-extrabold text-[#2C1E4A] leading-tight mb-8 flex items-center gap-2">
+            <FaHeartbeat className="text-red-600" />
+            Mental Health Resources (🇵🇭)
+          </h1>
 
-        <h1 className="text-3xl font-bold text-blue-800 mb-8 flex items-center gap-2">
-          <FaHeartbeat className="text-red-600" />
-          Mental Health Resources (🇵🇭)
-        </h1>
-
-        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
-          {resources.map((res, index) => (
-            <div
-              key={index}
-              className="bg-white p-6 rounded-lg shadow hover:shadow-md transition"
-            >
-              <h2 className="text-xl font-semibold text-gray-800">
-                {res.title}
-              </h2>
-              <p className="text-gray-600 text-sm mt-2">{res.description}</p>
-
-              <div className="mt-4 flex flex-col gap-2">
-                <a
-                  href={`tel:${res.phone}`}
-                  className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                >
-                  <FaPhone />
-                  Call Now
-                </a>
-
-                <a
-                  href={res.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-blue-600 hover:underline"
-                >
-                  <FaExternalLinkAlt />
-                  Visit Website
-                </a>
+          <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2">
+            {resources.map((res, index) => (
+              <div
+                key={index}
+                className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 border border-blue-100 flex flex-col gap-4"
+              >
+                <div className="flex items-center gap-4 mb-2">
+                  <Image src={resourceImages[index % resourceImages.length]} alt={res.title} width={56} height={56} className="rounded-full border-2 border-blue-200 shadow" />
+                  <h2 className="text-xl font-bold text-blue-800 flex items-center gap-2">
+                    <FaHeartbeat className="text-red-500 animate-pulse" />
+                    {res.title}
+                  </h2>
+                </div>
+                <p className="text-gray-600 text-sm mb-2 flex items-center gap-2">
+                  <FaInfoCircle className="text-blue-400" />
+                  {res.description}
+                </p>
+                <div className="mt-2 flex flex-col gap-2">
+                  <a
+                    href={`tel:${res.phone}`}
+                    className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition font-semibold shadow"
+                  >
+                    <FaPhone />
+                    Call Now
+                  </a>
+                  <a
+                    href={res.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-blue-600 hover:underline font-semibold"
+                  >
+                    <FaExternalLinkAlt />
+                    Visit Website
+                  </a>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

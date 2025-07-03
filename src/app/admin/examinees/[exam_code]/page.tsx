@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface ExamineeResult {
   exam_code: string;
@@ -71,7 +72,13 @@ const ExamineeListPage = () => {
                 {results.map((res, index) => (
                   <tr key={index}>
                     <td className="border px-4 py-2">{res.exam_code}</td>
-                    <td className="border px-4 py-2">{res.fullname}</td>
+                    <td className="border px-4 py-2">
+                      <Link href={`/admin/examinees/${exam_code}/${encodeURIComponent(res.fullname)}`}>
+                        {res.fullname}
+                      </Link>
+                    </td>
+
+
                     <td className="border px-4 py-2">{res.total_score}</td>
                     <td className="border px-4 py-2">{res.severity}</td>
                   </tr>
