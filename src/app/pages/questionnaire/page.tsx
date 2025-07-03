@@ -1,27 +1,20 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { IoArrowBack } from "react-icons/io5";
 
-const questions = [
-  "Little interest or pleasure in doing things",
-  "Feeling down, depressed, or hopeless",
-  "Trouble falling or staying asleep, or sleeping too much",
-  "Feeling tired or having little energy",
-  "Poor appetite or overeating",
-  "Feeling bad about yourself — or that you are a failure or have let yourself or your family down",
-  "Trouble concentrating on things, such as reading or watching TV",
-  "Moving or speaking so slowly that others could have noticed? Or the opposite — being so fidgety or restless that you’ve been moving around a lot more than usual",
-  "Thoughts that you would be better off dead, or thoughts of hurting yourself in some way",
-];
+interface Choice {
+  id: number;
+  text: string;
+  value: number;
+}
 
-const options = [
-  { label: "Not at all", value: 0 },
-  { label: "Several days", value: 1 },
-  { label: "More than half the days", value: 2 },
-  { label: "Nearly every day", value: 3 },
-];
+interface Question {
+  id: number;
+  text: string;
+  choices: Choice[];
+}
 
 const getSeverity = (score: number) => {
   if (score <= 4) return "Minimal depression";
@@ -40,19 +33,55 @@ const getAdvice = (severity: string) => {
 
 export default function QuestionnairePage() {
   const router = useRouter();
-  const [answers, setAnswers] = useState<number[]>(Array(9).fill(-1));
+  const searchParams = useSearchParams();
+
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [answers, setAnswers] = useState<number[]>([]);
   const [error, setError] = useState("");
   const [score, setScore] = useState(0);
   const [severity, setSeverity] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [examTitle, setExamTitle] = useState("");
 
-  
   useEffect(() => {
-    const username = sessionStorage.getItem("username");
-    if (!username) {
-      router.push("/sign");
+    const fullName = sessionStorage.getItem("fullName");
+    if (!fullName || fullName === "null" || fullName === "undefined") {
+      router.push("/sign/login");
+      return;
     }
-  }, [router]);
+
+    const exam_code = searchParams?.get("exam");
+    if (!exam_code) {
+      console.error("No exam code provided");
+      return;
+    }
+
+    sessionStorage.setItem("examCode", exam_code);
+
+    const fetchExamTitle = async () => {
+      try {
+        const res = await fetch(`/api/exams/info?exam_code=${exam_code}`);
+        const data = await res.json();
+        setExamTitle(data.title);
+      } catch (err) {
+        console.error("Error fetching exam info:", err);
+      }
+    };
+
+    const fetchQuestions = async () => {
+      try {
+        const res = await fetch("/api/userquestions");
+        const data = await res.json();
+        setQuestions(data);
+        setAnswers(Array(data.length).fill(-1));
+      } catch (err) {
+        console.error("Error fetching questions:", err);
+      }
+    };
+
+    fetchExamTitle();
+    fetchQuestions();
+  }, [searchParams, router]);
 
   const handleChange = (qIndex: number, value: number) => {
     const updated = [...answers];
@@ -70,10 +99,36 @@ export default function QuestionnairePage() {
 
     const total = answers.reduce((acc, curr) => acc + curr, 0);
     const level = getSeverity(total);
-    const username = sessionStorage.getItem("username") || "Anonymous";
-
     setScore(total);
     setSeverity(level);
+    setShowModal(true);
+
+    const fullName = sessionStorage.getItem("fullName");
+    const examCode = sessionStorage.getItem("examCode");
+
+    const answersDetails = questions.map((question, idx) => {
+      const selectedChoice = question.choices.find(c => c.value === answers[idx]);
+      return {
+        questionId: question.id,
+        choiceId: selectedChoice ? selectedChoice.id : null,
+      };
+    });
+
+    try {
+      await fetch("/api/submit-response", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName,
+          examCode,
+          totalScore: total,
+          severity: level,
+          answers: answersDetails,
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to submit response:", err);
+    }
   };
 
   return (
@@ -84,19 +139,20 @@ export default function QuestionnairePage() {
           className="text-blue-600 hover:text-blue-800 flex items-center"
         >
           <IoArrowBack className="mr-2" size={20} />
-          
         </button>
       </div>
 
-      <h1 className="text-2xl font-bold text-blue-800 mb-4">PHQ-9 Depression Assessment</h1>
+      <h1 className="text-2xl font-bold text-blue-800 mb-2">
+        PHQ-9: {examTitle}
+      </h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {questions.map((question, idx) => (
-          <div key={idx}>
-            <p className="font-medium">{idx + 1}. {question}</p>
+          <div key={question.id}>
+            <p className="font-medium">{idx + 1}. {question.text}</p>
             <div className="flex gap-4 mt-2">
-              {options.map((opt) => (
-                <label key={opt.value} className="flex items-center gap-1 text-sm">
+              {question.choices.map((opt) => (
+                <label key={opt.id} className="flex items-center gap-1 text-sm">
                   <input
                     type="radio"
                     name={`q-${idx}`}
@@ -105,7 +161,7 @@ export default function QuestionnairePage() {
                     onChange={() => handleChange(idx, opt.value)}
                     required
                   />
-                  {opt.label}
+                  {opt.text}
                 </label>
               ))}
             </div>
@@ -143,7 +199,7 @@ export default function QuestionnairePage() {
 
             <div className="mt-6 flex justify-end gap-4">
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => router.push("/")}
                 className="px-4 py-2 rounded border text-gray-700 hover:bg-gray-100"
               >
                 Close

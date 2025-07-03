@@ -191,4 +191,8 @@ export default function SignupPage() {
       </div>
     </>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 3c7305e (Save local changes before pulling)

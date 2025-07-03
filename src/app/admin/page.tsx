@@ -19,50 +19,44 @@ const AdminExamTable = () => {
   const [date, setDate] = useState("");
   const router = useRouter();
   const [showQuestionModal, setShowQuestionModal] = useState(false);
-const [categoryName, setCategoryName] = useState("");
-const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
-const [questionText, setQuestionText] = useState("");
-const [choices, setChoices] = useState(["", "", "", ""]);
-const [values, setValues] = useState([0, 0, 0, 0]);
-
-
+  const [categoryName, setCategoryName] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [questionText, setQuestionText] = useState("");
+  const [choices, setChoices] = useState(["", "", "", ""]);
+  const [values, setValues] = useState([0, 0, 0, 0]);
   const [questionsData, setQuestionsData] = useState<any[]>([]);
 
-useEffect(() => {
-  fetchExams();
-  fetchQuestions();
-}, []);
+  useEffect(() => {
+    fetchExams();
+    fetchQuestions();
+  }, []);
 
-const fetchQuestions = async () => {
-  try {
-    const response = await fetch("/api/questions");
-    const data = await response.json();
+  const fetchQuestions = async () => {
+    try {
+      const response = await fetch("/api/questions");
+      const data = await response.json();
 
-    // Group by question
-    const grouped = data.reduce((acc: any, curr: any) => {
-      const key = curr.question_id;
-      if (!acc[key]) {
-        acc[key] = {
-          category: curr.category_name,
-          question: curr.question_text,
-          choices: [],
-        };
-      }
-      acc[key].choices.push({
-        text: curr.choice_text,
-        value: curr.choice_value,
-      });
-      return acc;
-    }, {});
+      const grouped = data.reduce((acc: any, curr: any) => {
+        const key = curr.question_id;
+        if (!acc[key]) {
+          acc[key] = {
+            category: curr.category_name,
+            question: curr.question_text,
+            choices: [],
+          };
+        }
+        acc[key].choices.push({
+          text: curr.choice_text,
+          value: curr.choice_value,
+        });
+        return acc;
+      }, {});
 
-    setQuestionsData(Object.values(grouped));
-  } catch (err) {
-    console.error("Failed to fetch questions:", err);
-  }
-};
-
-
-
+      setQuestionsData(Object.values(grouped));
+    } catch (err) {
+      console.error("Failed to fetch questions:", err);
+    }
+  };
 
   const fetchExams = async () => {
     try {
@@ -75,44 +69,45 @@ const fetchQuestions = async () => {
   };
 
   const handleAddExam = async () => {
-    if (!title || !date) return;
+  if (!title || !date) return;
 
-    const formattedDate = new Date(date);
-    const exam_code = formattedDate.toISOString().slice(0, 10).replace(/-/g, "");
+  const formattedDate = new Date(date);
+  const exam_code = formattedDate.toISOString().slice(0, 10).replace(/-/g, "");
 
-    const newExam = {
-      exam_code,
-      title,
-      severity: "Pending",
-      total_examinees: 0,
-      exam_date: formattedDate.toISOString().slice(0, 10),
-    };
-
-    try {
-      const res = await fetch("/api/exams", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newExam),
-      });
-
-      console.log("POST /api/exams status:", res.status);
-      const responseText = await res.text();
-      console.log("Response body:", responseText);
-
-      if (!res.ok) throw new Error(`Failed to add exam: ${res.status}`);
-
-      setTitle("");
-      setDate("");
-      setShowModal(false);
-      fetchExams();
-    } catch (err) {
-      console.error("Error adding exam:", err);
-    }
+  const newExam = {
+    exam_code,
+    title,
+    severity: "Pending",
+    total_examinees: 0,
+    exam_date: formattedDate.toISOString().slice(0, 10),
   };
+
+  try {
+    const res = await fetch("/api/exams", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newExam),
+    });
+
+    if (!res.ok) throw new Error("Failed to add exam");
+
+    setTitle("");
+    setDate("");
+    setShowModal(false);
+    fetchExams();
+
+    // ✅ Store examCode in sessionStorage
+    sessionStorage.setItem("examCode", exam_code);
+
+  } catch (err) {
+    console.error("Error adding exam:", err);
+  }
+};
+
 
   const handleLogout = () => {
     sessionStorage.clear();
-    router.push("/sign");
+    router.push("/sign/login");
   };
 
   return (
