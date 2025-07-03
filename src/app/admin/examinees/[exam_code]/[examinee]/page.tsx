@@ -15,8 +15,10 @@ export default function ExamineeDetailsPage() {
   const params = useParams();
   const router = useRouter();
 
+  // Extract and decode parameters
   const exam_code = Array.isArray(params?.exam_code) ? params.exam_code[0] : params?.exam_code ?? "";
-  const examinee = Array.isArray(params?.examinee) ? params.examinee[0] : params?.examinee ?? "";
+  const examineeParam = Array.isArray(params?.examinee) ? params.examinee[0] : params?.examinee ?? "";
+  const examinee = decodeURIComponent(examineeParam); // ✅ decode for display
 
   const [details, setDetails] = useState<ResponseDetail[]>([]);
   const [loading, setLoading] = useState(true);

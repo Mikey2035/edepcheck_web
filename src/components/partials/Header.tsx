@@ -41,7 +41,7 @@ const Header: React.FC = () => {
   const handleLogout = () => {
     sessionStorage.clear();
     setFullName(null);
-    window.location.href = "/sign";
+    window.location.href = "/sign/login";
   };
 
   const toggleDropdown = () => setIsProfileDropdownVisible((prev) => !prev);
@@ -147,7 +147,7 @@ const Header: React.FC = () => {
           ) : (
             <li>
               <Link
-                href="/sign"
+                href="/sign/login"
                 className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm hover:bg-blue-200 transition-transform duration-300 transform hover:scale-105"
               >
                 <FaSignInAlt className="text-blue-800" />
