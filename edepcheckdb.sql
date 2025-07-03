@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 02, 2025 at 01:26 PM
+-- Generation Time: Jul 03, 2025 at 09:30 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -99,18 +99,14 @@ CREATE TABLE `responses` (
   `submitted_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `results`
+-- Dumping data for table `responses`
 --
 
-CREATE TABLE `results` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `score` int(16) NOT NULL,
-  `severity` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO `responses` (`id`, `user_id`, `exam_code_id`, `total_score`, `severity`, `submitted_at`) VALUES
+(1, 10, 2, 2, 'Minimal depression', '2025-07-03 05:55:51'),
+(2, 10, 2, 3, 'Minimal depression', '2025-07-03 05:56:44'),
+(5, 12, 2, 4, 'Minimal depression', '2025-07-03 06:22:53');
 
 -- --------------------------------------------------------
 
@@ -132,7 +128,8 @@ CREATE TABLE `tb_exam` (
 --
 
 INSERT INTO `tb_exam` (`id`, `exam_code`, `title`, `severity`, `total_examinees`, `exam_date`) VALUES
-(1, '20250710', 'FAD EXAMINATION 2025', 'Pending', 0, '2025-07-10');
+(1, '20250710', 'FAD EXAMINATION 2025', 'Pending', 0, '2025-07-10'),
+(2, '20250717', 'Sample Exam', 'Pending', 0, '2025-07-17');
 
 -- --------------------------------------------------------
 
@@ -163,7 +160,8 @@ INSERT INTO `users` (`id`, `fullname`, `email`, `division`, `position`, `passwor
 (8, 'Joebert Cabatit', '', 'Finance and Administration', 'OJT', '$2b$10$YGbN0gtxxDSqV6haOn1VYOWK.BLMDDR7KXjZ4tS2TmJR7d8Q92bZ.', 'user', '2025-07-01 08:56:04'),
 (9, 'JK Cabatit', '', 'Finance and Administration', 'OJT', '$2b$10$pgfcBJiqkCOua6aMNjgAu.rgyC4NED8YZ8tILVvDRuT2LgFxGM9q6', 'user', '2025-07-02 02:07:32'),
 (10, 'Carlyn Dugmoc', 'carlynmaedugmoc@gmail.com', 'Finance and Administration', 'OJT', '$2b$10$riKky3XsQtIYV6D2LCWsAOxKLGwoFhaxZRWAhNbdf.OXkTLLU6luG', 'user', '2025-07-02 02:46:39'),
-(11, 'This is Admin', 'admin@edepcheck.com', 'Finance and Administration', 'Admin', '$2b$10$pRh/P8AD3l8LVZUo9zAyQuPHRRjcws7bCe3iIF60NZta4xehX7EYy', 'admin', '2025-07-02 02:51:44');
+(11, 'This is Admin', 'admin@edepcheck.com', 'Finance and Administration', 'Admin', '$2b$10$pRh/P8AD3l8LVZUo9zAyQuPHRRjcws7bCe3iIF60NZta4xehX7EYy', 'admin', '2025-07-02 02:51:44'),
+(12, 'Lorinkit Colot', 'lorinkit.colot@gmail.com', 'FAD', 'OJT', '$2b$10$Ky90F8ZwYZ.ITijVSyeKvu8ydZiRoBA714Hk73z0WVwj4V6RZ9ZN2', 'user', '2025-07-03 06:19:42');
 
 -- --------------------------------------------------------
 
@@ -180,6 +178,13 @@ CREATE TABLE `user_responses_details` (
   `response_id` int(15) NOT NULL,
   `submitted_at` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user_responses_details`
+--
+
+INSERT INTO `user_responses_details` (`id`, `user_id`, `question_id`, `choice_id`, `exam_code_id`, `response_id`, `submitted_at`) VALUES
+(3, 12, 1, 1, 2, 5, '2025-07-03');
 
 --
 -- Indexes for dumped tables
@@ -212,13 +217,6 @@ ALTER TABLE `responses`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
   ADD KEY `exam_code_id` (`exam_code_id`);
-
---
--- Indexes for table `results`
---
-ALTER TABLE `results`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `test` (`user_id`);
 
 --
 -- Indexes for table `tb_exam`
@@ -270,31 +268,25 @@ ALTER TABLE `questions`
 -- AUTO_INCREMENT for table `responses`
 --
 ALTER TABLE `responses`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `results`
---
-ALTER TABLE `results`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `tb_exam`
 --
 ALTER TABLE `tb_exam`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `user_responses_details`
 --
 ALTER TABLE `user_responses_details`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
@@ -318,12 +310,6 @@ ALTER TABLE `questions`
 ALTER TABLE `responses`
   ADD CONSTRAINT `responses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `responses_ibfk_3` FOREIGN KEY (`exam_code_id`) REFERENCES `tb_exam` (`id`);
-
---
--- Constraints for table `results`
---
-ALTER TABLE `results`
-  ADD CONSTRAINT `test` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `user_responses_details`
