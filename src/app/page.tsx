@@ -32,7 +32,8 @@ const Home: React.FC = () => {
         <div className="flex flex-col-reverse lg:flex-row items-center gap-12 max-w-6xl w-full group">
           <div className="flex-1 text-center lg:text-left transition-all duration-300">
             <h1 className="text-5xl sm:text-6xl font-extrabold text-[#2C1E4A] leading-tight mb-6 transform transition duration-300 group-hover:scale-105 group-hover:text-[#1f1532]">
-              E-DEPCHECK PHQ-9<br className="hidden sm:block" /> DEPRESSION ASSESSMENT
+              E-DEPCHECK PHQ-9
+              <br className="hidden sm:block" /> DEPRESSION ASSESSMENT
             </h1>
             <p className="text-lg sm:text-xl text-[#3F3F3F] mb-8 max-w-lg mx-auto lg:mx-0 transform transition duration-300 group-hover:-translate-y-1 group-hover:opacity-90">
               Your Mental Health Matters

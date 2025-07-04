@@ -107,7 +107,9 @@ export default function QuestionnairePage() {
     const examCode = sessionStorage.getItem("examCode");
 
     const answersDetails = questions.map((question, idx) => {
-      const selectedChoice = question.choices.find(c => c.value === answers[idx]);
+      const selectedChoice = question.choices.find(
+        (c) => c.value === answers[idx]
+      );
       return {
         questionId: question.id,
         choiceId: selectedChoice ? selectedChoice.id : null,
@@ -149,7 +151,9 @@ export default function QuestionnairePage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {questions.map((question, idx) => (
           <div key={question.id}>
-            <p className="font-medium">{idx + 1}. {question.text}</p>
+            <p className="font-medium">
+              {idx + 1}. {question.text}
+            </p>
             <div className="flex gap-4 mt-2">
               {question.choices.map((opt) => (
                 <label key={opt.id} className="flex items-center gap-1 text-sm">
@@ -181,18 +185,54 @@ export default function QuestionnairePage() {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
-            <h2 className="text-xl font-bold text-blue-700 mb-2">Your Assessment Result</h2>
-            <p><strong>Total Score:</strong> {score}</p>
-            <p><strong>Severity:</strong> {severity}</p>
-            <p className="mt-2 text-sm italic text-gray-700">{getAdvice(severity)}</p>
+            <h2 className="text-xl font-bold text-blue-700 mb-2">
+              Your Assessment Result
+            </h2>
+            <p>
+              <strong>Total Score:</strong> {score}
+            </p>
+            <p>
+              <strong>Severity:</strong> {severity}
+            </p>
+            <p className="mt-2 text-sm italic text-gray-700">
+              {getAdvice(severity)}
+            </p>
 
-            {["Moderate depression", "Moderately severe depression", "Severe depression"].includes(severity) && (
+            {[
+              "Moderate depression",
+              "Moderately severe depression",
+              "Severe depression",
+            ].includes(severity) && (
               <div className="mt-4 text-sm text-blue-700">
                 <p className="font-semibold mb-1">Support Resources:</p>
                 <ul className="list-disc ml-6 space-y-1">
-                  <li><a href="https://www.facebook.com/DOHgovph/posts/3438694606180853/" target="_blank" className="underline">DOH Mental Health Hotline</a></li>
-                  <li><a href="https://mentalhealthph.org/" target="_blank" className="underline">MentalHealthPH</a></li>
-                  <li><a href="https://www.who.int/health-topics/mental-health" target="_blank" className="underline">WHO Mental Health Resources</a></li>
+                  <li>
+                    <a
+                      href="https://www.facebook.com/DOHgovph/posts/3438694606180853/"
+                      target="_blank"
+                      className="underline"
+                    >
+                      DOH Mental Health Hotline
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://mentalhealthph.org/"
+                      target="_blank"
+                      className="underline"
+                    >
+                      MentalHealthPH
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.who.int/health-topics/mental-health"
+                      target="_blank"
+                      className="underline"
+                    >
+                      WHO Mental Health Resources
+                    </a>
+                  </li>
                 </ul>
               </div>
             )}

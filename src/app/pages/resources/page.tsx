@@ -2,7 +2,13 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { FaHeartbeat, FaPhone, FaExternalLinkAlt, FaArrowLeft, FaInfoCircle } from "react-icons/fa";
+import {
+  FaHeartbeat,
+  FaPhone,
+  FaExternalLinkAlt,
+  FaArrowLeft,
+  FaInfoCircle,
+} from "react-icons/fa";
 import Image from "next/image";
 import Header from "@/components/partials/Header";
 
@@ -63,7 +69,13 @@ export default function ResourcesPage() {
                 className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 border border-blue-100 flex flex-col gap-4"
               >
                 <div className="flex items-center gap-4 mb-2">
-                  <Image src={resourceImages[index % resourceImages.length]} alt={res.title} width={56} height={56} className="rounded-full border-2 border-blue-200 shadow" />
+                  <Image
+                    src={resourceImages[index % resourceImages.length]}
+                    alt={res.title}
+                    width={56}
+                    height={56}
+                    className="rounded-full border-2 border-blue-200 shadow"
+                  />
                   <h2 className="text-xl font-bold text-blue-800 flex items-center gap-2">
                     <FaHeartbeat className="text-red-500 animate-pulse" />
                     {res.title}

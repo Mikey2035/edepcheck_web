@@ -80,14 +80,19 @@ const LogIn: React.FC = () => {
               Log In
             </h1>
           </div>
-          <p className="text-gray-600 mt-2">Welcome back! Please log in to continue.</p>
+          <p className="text-gray-600 mt-2">
+            Welcome back! Please log in to continue.
+          </p>
         </div>
 
         <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
           <form onSubmit={handleSubmit}>
             {/* Email Input */}
             <div className="mb-4">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email
               </label>
               <input
@@ -103,7 +108,10 @@ const LogIn: React.FC = () => {
 
             {/* Password Input */}
             <div className="mb-4 relative">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <input
@@ -126,7 +134,11 @@ const LogIn: React.FC = () => {
 
             {/* Status Message */}
             {statusMessage && (
-              <div className={`mb-4 text-sm ${isSuccessful ? "text-green-500" : "text-red-500"}`}>
+              <div
+                className={`mb-4 text-sm ${
+                  isSuccessful ? "text-green-500" : "text-red-500"
+                }`}
+              >
                 {statusMessage}
               </div>
             )}
@@ -142,7 +154,7 @@ const LogIn: React.FC = () => {
           <div className="text-center mt-6 text-sm">
             Don&apos;t have an account?{" "}
             <button
-              onClick={() => router.push("/signup")}
+              onClick={() => router.push("/sign/signup")}
               className="text-blue-500 hover:underline font-medium"
             >
               Sign Up

@@ -38,9 +38,11 @@ export default function HistoryPage() {
       if (!fullName) return;
 
       try {
-        const response = await fetch(`/api/results?fullName=${encodeURIComponent(fullName)}`);
+        const response = await fetch(
+          `/api/results?fullName=${encodeURIComponent(fullName)}`
+        );
         if (!response.ok) throw new Error("Failed to fetch results");
-        
+
         const data = await response.json();
         setResults(data.results); // Make sure your API returns { results: [...] }
       } catch (error) {

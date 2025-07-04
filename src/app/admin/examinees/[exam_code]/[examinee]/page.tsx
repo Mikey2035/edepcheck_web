@@ -16,8 +16,12 @@ export default function ExamineeDetailsPage() {
   const router = useRouter();
 
   // Extract and decode parameters
-  const exam_code = Array.isArray(params?.exam_code) ? params.exam_code[0] : params?.exam_code ?? "";
-  const examineeParam = Array.isArray(params?.examinee) ? params.examinee[0] : params?.examinee ?? "";
+  const exam_code = Array.isArray(params?.exam_code)
+    ? params.exam_code[0]
+    : params?.exam_code ?? "";
+  const examineeParam = Array.isArray(params?.examinee)
+    ? params.examinee[0]
+    : params?.examinee ?? "";
   const examinee = decodeURIComponent(examineeParam); // ✅ decode for display
 
   const [details, setDetails] = useState<ResponseDetail[]>([]);
@@ -27,7 +31,9 @@ export default function ExamineeDetailsPage() {
     const fetchDetails = async () => {
       try {
         const res = await fetch(
-          `/api/examinees?exam_code=${exam_code}&fullname=${encodeURIComponent(examinee)}`
+          `/api/examinees?exam_code=${exam_code}&fullname=${encodeURIComponent(
+            examinee
+          )}`
         );
         const data = await res.json();
         setDetails(data);
@@ -57,7 +63,10 @@ export default function ExamineeDetailsPage() {
           <h1 className="text-2xl font-bold">
             Examinee: {examinee} <br /> Exam Code: {exam_code}
           </h1>
-          <button onClick={handleBack} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
+          <button
+            onClick={handleBack}
+            className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+          >
             Back
           </button>
         </div>

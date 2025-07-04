@@ -59,37 +59,36 @@ export default function ProfilePage() {
   };
 
   const handleSave = async () => {
-  if (!user) return;
+    if (!user) return;
 
-  try {
-    const res = await fetch("/api/user", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: user.email,
-        fullname: formData.fullname,
-        division: formData.division,
-        position: formData.position,
-      }),
-    });
+    try {
+      const res = await fetch("/api/user", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: user.email,
+          fullname: formData.fullname,
+          division: formData.division,
+          position: formData.position,
+        }),
+      });
 
-    const result = await res.json();
+      const result = await res.json();
 
-    if (!res.ok) {
-      alert(result.error || "Failed to update profile.");
-      return;
+      if (!res.ok) {
+        alert(result.error || "Failed to update profile.");
+        return;
+      }
+
+      // Update local state to reflect changes
+      setUser((prev) => (prev ? { ...prev, ...formData } : null));
+      setShowModal(false);
+      alert("Profile updated successfully.");
+    } catch (error) {
+      console.error("Update failed:", error);
+      alert("An error occurred while updating the profile.");
     }
-
-    // Update local state to reflect changes
-    setUser((prev) => prev ? { ...prev, ...formData } : null);
-    setShowModal(false);
-    alert("Profile updated successfully.");
-  } catch (error) {
-    console.error("Update failed:", error);
-    alert("An error occurred while updating the profile.");
-  }
-};
-
+  };
 
   if (!user) return <div>Loading...</div>;
 
@@ -122,19 +121,39 @@ export default function ProfilePage() {
           </button>
         </div>
 
-        <div><p className="text-sm text-gray-600">Full Name:</p><p>{user.fullname}</p></div>
-        <div><p className="text-sm text-gray-600">Email:</p><p>{user.email}</p></div>
-        <div><p className="text-sm text-gray-600">Division:</p><p>{user.division}</p></div>
-        <div><p className="text-sm text-gray-600">Position:</p><p>{user.position}</p></div>
-        <div><p className="text-sm text-gray-600">Role:</p><p>{user.role}</p></div>
-        <div><p className="text-sm text-gray-600">Account Created:</p><p>{new Date(user.created_at).toLocaleString()}</p></div>
+        <div>
+          <p className="text-sm text-gray-600">Full Name:</p>
+          <p>{user.fullname}</p>
+        </div>
+        <div>
+          <p className="text-sm text-gray-600">Email:</p>
+          <p>{user.email}</p>
+        </div>
+        <div>
+          <p className="text-sm text-gray-600">Division:</p>
+          <p>{user.division}</p>
+        </div>
+        <div>
+          <p className="text-sm text-gray-600">Position:</p>
+          <p>{user.position}</p>
+        </div>
+        <div>
+          <p className="text-sm text-gray-600">Role:</p>
+          <p>{user.role}</p>
+        </div>
+        <div>
+          <p className="text-sm text-gray-600">Account Created:</p>
+          <p>{new Date(user.created_at).toLocaleString()}</p>
+        </div>
       </div>
 
       {/* ✨ Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-md space-y-4 shadow-lg relative">
-            <h2 className="text-xl font-semibold text-gray-800">Edit Profile</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Edit Profile
+            </h2>
 
             <label className="block">
               <span className="text-sm text-gray-600">Full Name</span>

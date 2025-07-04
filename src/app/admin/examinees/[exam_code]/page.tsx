@@ -13,7 +13,9 @@ interface ExamineeResult {
 
 const ExamineeListPage = () => {
   const params = useParams();
-  const exam_code = Array.isArray(params?.exam_code) ? params.exam_code[0] : params?.exam_code;
+  const exam_code = Array.isArray(params?.exam_code)
+    ? params.exam_code[0]
+    : params?.exam_code;
   const router = useRouter();
   const [results, setResults] = useState<ExamineeResult[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,8 +41,6 @@ const ExamineeListPage = () => {
   const handleBack = () => {
     router.push("/admin");
   };
-
-
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -73,11 +73,14 @@ const ExamineeListPage = () => {
                   <tr key={index}>
                     <td className="border px-4 py-2">{res.exam_code}</td>
                     <td className="border px-4 py-2">
-                      <Link href={`/admin/examinees/${exam_code}/${encodeURIComponent(res.fullname)}`}>
+                      <Link
+                        href={`/admin/examinees/${exam_code}/${encodeURIComponent(
+                          res.fullname
+                        )}`}
+                      >
                         {res.fullname}
                       </Link>
                     </td>
-
 
                     <td className="border px-4 py-2">{res.total_score}</td>
                     <td className="border px-4 py-2">{res.severity}</td>

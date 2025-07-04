@@ -31,16 +31,26 @@ export default function SignupPage() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { fullName, email, password, confirmPassword, division, position } = formData;
+    const { fullName, email, password, confirmPassword, division, position } =
+      formData;
 
-    if (!fullName || !email || !password || !confirmPassword || !division || !position) {
+    if (
+      !fullName ||
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !division ||
+      !position
+    ) {
       setStatusMessage("Please fill in all fields.");
       setIsSuccessful(false);
       return;
@@ -99,16 +109,40 @@ export default function SignupPage() {
 
           {/* Right Form Section */}
           <div className="w-full md:w-3/5 p-10 flex flex-col justify-center">
-            <h1 className="text-2xl font-bold text-center text-[#2C1E4A] mb-6 tracking-tight">Create an Account</h1>
+            <h1 className="text-2xl font-bold text-center text-[#2C1E4A] mb-6 tracking-tight">
+              Create an Account
+            </h1>
             <form onSubmit={handleSubmit} className="space-y-6">
               {[
-                { icon: FaUser, name: "fullName", placeholder: "Full Name", type: "text" },
-                { icon: FaEnvelope, name: "email", placeholder: "Email", type: "email" },
-                { icon: FaUserTag, name: "username", placeholder: "Username", type: "text" },
-                { icon: FaBuilding, name: "division", placeholder: "Division", type: "text" },
-                { icon: FaBriefcase, name: "position", placeholder: "Position", type: "text" },
+                {
+                  icon: FaUser,
+                  name: "fullName",
+                  placeholder: "Full Name",
+                  type: "text",
+                },
+                {
+                  icon: FaEnvelope,
+                  name: "email",
+                  placeholder: "Email",
+                  type: "email",
+                },
+                {
+                  icon: FaUserTag,
+                  name: "username",
+                  placeholder: "Username",
+                  type: "text",
+                },
+                {
+                  icon: FaBriefcase,
+                  name: "position",
+                  placeholder: "Position",
+                  type: "text",
+                },
               ].map(({ icon: Icon, ...input }) => (
-                <div key={input.name} className="flex items-center border rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-blue-300 transition">
+                <div
+                  key={input.name}
+                  className="flex items-center border rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-blue-300 transition"
+                >
                   <Icon className="text-blue-400 mr-3" />
                   <input
                     {...input}
@@ -119,6 +153,43 @@ export default function SignupPage() {
                   />
                 </div>
               ))}
+
+              {/* Division Dropdown */}
+              <div className="flex items-center border rounded-md px-3 py-2">
+                <FaBuilding className="text-blue-400 mr-3" />
+                <select
+                  name="division"
+                  value={formData.division}
+                  onChange={handleChange}
+                  className={`w-full outline-none text-sm bg-transparent transition-all duration-300 transform focus:scale-105 hover:scale-105 focus:border-blue-500 hover:border-blue-400 border-none ${
+                    formData.division ? "text-black" : "text-gray-400"
+                  }`}
+                  required
+                >
+                  <option value="" disabled>
+                    Select Division
+                  </option>
+                  <option value="Finance and Administration">
+                    Finance and Administration
+                  </option>
+                  <option value="Local Government Capability Development Division">
+                    Local Government Capability Development Division
+                  </option>
+                  <option value="Local Government Monitoring and Evaluation Division">
+                    Local Government Monitoring and Evaluation Division
+                  </option>
+                  <option value="Project Development Monitoring Unit">
+                    Project Development Monitoring Unit
+                  </option>
+                  <option value="Legal Unit">Legal Unit</option>
+                  <option value="Office of the Regional Director">
+                    Office of the Regional Director
+                  </option>
+                  <option value="Commission on Audit">
+                    Commission on Audit
+                  </option>
+                </select>
+              </div>
 
               {/* Password Field */}
               <div className="flex items-center border rounded-md px-3 py-2 relative">
@@ -156,7 +227,9 @@ export default function SignupPage() {
                 <button
                   type="button"
                   className="absolute right-3 text-gray-500"
-                  onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+                  onClick={() =>
+                    setConfirmPasswordVisible(!confirmPasswordVisible)
+                  }
                 >
                   {confirmPasswordVisible ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -164,7 +237,11 @@ export default function SignupPage() {
 
               {/* Status Message */}
               {statusMessage && (
-                <p className={`text-sm ${isSuccessful ? "text-green-500" : "text-red-500"}`}>
+                <p
+                  className={`text-sm ${
+                    isSuccessful ? "text-green-500" : "text-red-500"
+                  }`}
+                >
                   {statusMessage}
                 </p>
               )}
@@ -191,8 +268,4 @@ export default function SignupPage() {
       </div>
     </>
   );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 3c7305e (Save local changes before pulling)
