@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 03, 2025 at 09:30 AM
+-- Generation Time: Jul 04, 2025 at 05:08 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -38,7 +38,8 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`, `created_at`) VALUES
-(1, 'Work Performance & Efficiency', '2025-07-02 08:19:19');
+(1, 'Work Performance & Efficiency', '2025-07-02 08:19:19'),
+(2, 'Coping & Support Systems', '2025-07-03 15:56:45');
 
 -- --------------------------------------------------------
 
@@ -62,7 +63,11 @@ INSERT INTO `choices` (`id`, `question_id`, `text`, `value`, `created_at`) VALUE
 (1, 1, 'Always', 4, '2025-07-02 08:30:09'),
 (2, 1, 'Sometimes', 3, '2025-07-02 08:30:09'),
 (3, 1, 'Often', 2, '2025-07-02 08:30:09'),
-(4, 1, 'Never', 1, '2025-07-02 08:30:09');
+(4, 1, 'Never', 1, '2025-07-02 08:30:09'),
+(5, 2, 'Fully aware and used them', 3, '2025-07-03 15:56:45'),
+(6, 2, 'Aware but haven’t used them', 2, '2025-07-03 15:56:45'),
+(7, 2, 'Somewhat aware', 1, '2025-07-03 15:56:45'),
+(8, 2, 'Not aware at all', 0, '2025-07-03 15:56:45');
 
 -- --------------------------------------------------------
 
@@ -82,7 +87,8 @@ CREATE TABLE `questions` (
 --
 
 INSERT INTO `questions` (`id`, `category_id`, `text`, `created_at`) VALUES
-(1, 1, 'Do you find it challenging to stay motivated during the workday?', '2025-07-02 08:30:09');
+(1, 1, 'Do you find it challenging to stay motivated during the workday?', '2025-07-02 08:30:09'),
+(2, 2, 'Are you aware of mental health resources offered by your employer?', '2025-07-03 15:56:45');
 
 -- --------------------------------------------------------
 
@@ -104,9 +110,14 @@ CREATE TABLE `responses` (
 --
 
 INSERT INTO `responses` (`id`, `user_id`, `exam_code_id`, `total_score`, `severity`, `submitted_at`) VALUES
-(1, 10, 2, 2, 'Minimal depression', '2025-07-03 05:55:51'),
-(2, 10, 2, 3, 'Minimal depression', '2025-07-03 05:56:44'),
-(5, 12, 2, 4, 'Minimal depression', '2025-07-03 06:22:53');
+(1, 10, 3, 2, 'Minimal depression', '2025-07-03 05:55:51'),
+(2, 10, 3, 3, 'Minimal depression', '2025-07-03 05:56:44'),
+(5, 12, 3, 4, 'Minimal depression', '2025-07-03 06:22:53'),
+(6, 12, 3, 3, 'Minimal depression', '2025-07-03 14:47:41'),
+(7, 12, 3, 2, 'Minimal depression', '2025-07-03 15:14:20'),
+(8, 12, 3, 1, 'Minimal depression', '2025-07-03 15:17:07'),
+(9, 13, 3, 3, 'Minimal depression', '2025-07-03 15:18:07'),
+(10, 12, 3, 1, 'Minimal depression', '2025-07-03 15:57:58');
 
 -- --------------------------------------------------------
 
@@ -116,7 +127,7 @@ INSERT INTO `responses` (`id`, `user_id`, `exam_code_id`, `total_score`, `severi
 
 CREATE TABLE `tb_exam` (
   `id` int(15) NOT NULL,
-  `exam_code` varchar(100) NOT NULL,
+  `exam_code` varchar(11) NOT NULL,
   `title` varchar(255) NOT NULL,
   `severity` varchar(100) NOT NULL,
   `total_examinees` int(15) NOT NULL,
@@ -128,8 +139,7 @@ CREATE TABLE `tb_exam` (
 --
 
 INSERT INTO `tb_exam` (`id`, `exam_code`, `title`, `severity`, `total_examinees`, `exam_date`) VALUES
-(1, '20250710', 'FAD EXAMINATION 2025', 'Pending', 0, '2025-07-10'),
-(2, '20250717', 'Sample Exam', 'Pending', 0, '2025-07-17');
+(3, '20250714', 'Sample Examination', 'Pending', 0, '2025-07-14');
 
 -- --------------------------------------------------------
 
@@ -161,7 +171,8 @@ INSERT INTO `users` (`id`, `fullname`, `email`, `division`, `position`, `passwor
 (9, 'JK Cabatit', '', 'Finance and Administration', 'OJT', '$2b$10$pgfcBJiqkCOua6aMNjgAu.rgyC4NED8YZ8tILVvDRuT2LgFxGM9q6', 'user', '2025-07-02 02:07:32'),
 (10, 'Carlyn Dugmoc', 'carlynmaedugmoc@gmail.com', 'Finance and Administration', 'OJT', '$2b$10$riKky3XsQtIYV6D2LCWsAOxKLGwoFhaxZRWAhNbdf.OXkTLLU6luG', 'user', '2025-07-02 02:46:39'),
 (11, 'This is Admin', 'admin@edepcheck.com', 'Finance and Administration', 'Admin', '$2b$10$pRh/P8AD3l8LVZUo9zAyQuPHRRjcws7bCe3iIF60NZta4xehX7EYy', 'admin', '2025-07-02 02:51:44'),
-(12, 'Lorinkit Colot', 'lorinkit.colot@gmail.com', 'FAD', 'OJT', '$2b$10$Ky90F8ZwYZ.ITijVSyeKvu8ydZiRoBA714Hk73z0WVwj4V6RZ9ZN2', 'user', '2025-07-03 06:19:42');
+(12, 'Lorinkit Colot', 'lorinkit.colot@gmail.com', 'FAD', 'OJT', '$2b$10$Ky90F8ZwYZ.ITijVSyeKvu8ydZiRoBA714Hk73z0WVwj4V6RZ9ZN2', 'user', '2025-07-03 06:19:42'),
+(13, 'Heyjoe Cabatit', 'joeboicabs@gmail.com', 'Finance and Administration', 'OJT', '$2b$10$zEzfCdCfJehIL2Qfkkf7IeEOEJI.A9GKgc//4s5CuBxGJ3GDoDFrW', 'user', '2025-07-03 12:06:11');
 
 -- --------------------------------------------------------
 
@@ -184,7 +195,13 @@ CREATE TABLE `user_responses_details` (
 --
 
 INSERT INTO `user_responses_details` (`id`, `user_id`, `question_id`, `choice_id`, `exam_code_id`, `response_id`, `submitted_at`) VALUES
-(3, 12, 1, 1, 2, 5, '2025-07-03');
+(3, 12, 1, 1, 3, 5, '2025-07-03'),
+(4, 12, 1, 2, 3, 6, '2025-07-03'),
+(5, 12, 1, 3, 3, 7, '2025-07-03'),
+(6, 12, 1, 4, 3, 8, '2025-07-03'),
+(7, 13, 1, 2, 3, 9, '2025-07-03'),
+(8, 12, 1, 4, 3, 10, '2025-07-03'),
+(9, 12, 2, 8, 3, 10, '2025-07-03');
 
 --
 -- Indexes for dumped tables
@@ -216,7 +233,7 @@ ALTER TABLE `questions`
 ALTER TABLE `responses`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
-  ADD KEY `exam_code_id` (`exam_code_id`);
+  ADD KEY `responses_ibfk_2` (`exam_code_id`);
 
 --
 -- Indexes for table `tb_exam`
@@ -250,43 +267,43 @@ ALTER TABLE `user_responses_details`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `choices`
 --
 ALTER TABLE `choices`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `responses`
 --
 ALTER TABLE `responses`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `tb_exam`
 --
 ALTER TABLE `tb_exam`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `user_responses_details`
 --
 ALTER TABLE `user_responses_details`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables
@@ -309,7 +326,7 @@ ALTER TABLE `questions`
 --
 ALTER TABLE `responses`
   ADD CONSTRAINT `responses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `responses_ibfk_3` FOREIGN KEY (`exam_code_id`) REFERENCES `tb_exam` (`id`);
+  ADD CONSTRAINT `responses_ibfk_2` FOREIGN KEY (`exam_code_id`) REFERENCES `tb_exam` (`id`);
 
 --
 -- Constraints for table `user_responses_details`
