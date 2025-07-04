@@ -21,7 +21,7 @@ const AdminExamTable = () => {
   const router = useRouter();
   const [editExam, setEditExam] = useState<Exam | null>(null);
 
-  // Questions table states
+  // Questions
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   const [categoryName, setCategoryName] = useState("");
   const [questionText, setQuestionText] = useState("");
@@ -39,11 +39,20 @@ const AdminExamTable = () => {
     try {
       const response = await fetch("/api/exams");
       const data = await response.json();
+
+      if (!Array.isArray(data)) {
+        console.error("Unexpected response:", data);
+        setExams([]); // Prevent .map() error
+        return;
+      }
+
       setExams(data);
     } catch (err) {
       console.error("Failed to fetch exams:", err);
+      setExams([]);
     }
   };
+  
 
   const fetchQuestions = async () => {
     try {
@@ -117,25 +126,36 @@ const AdminExamTable = () => {
         : "/api/questions";
       const method = editQuestionId ? "PUT" : "POST";
 
+      console.log("Submitting question:", {
+        category_name: categoryName,
+        question_text: questionText,
+        choices: choices.map((text, i) => ({
+          text,
+          value: parseInt(values[i] as any, 10) || 0,
+        })),
+      });
+      
+
       await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           category_name: categoryName,
           question_text: questionText,
-          choices: choices.map((text, i) => ({ text, value: values[i] })),
+          choices: choices.map((text, i) => ({
+            text,
+            value: parseInt(values[i] as any, 10) || 0, // Ensure value is a number
+          })),
         }),
       });
+      
 
-      // Reset states
       setCategoryName("");
       setQuestionText("");
       setChoices(["", "", "", ""]);
       setValues([0, 0, 0, 0]);
       setEditQuestionId(null);
       setShowQuestionModal(false);
-
-      // Refresh questions
       fetchQuestions();
     } catch (err) {
       console.error("Failed to submit question:", err);
@@ -216,7 +236,9 @@ const AdminExamTable = () => {
                         try {
                           const res = await fetch(
                             `/api/exams?exam_code=${exam.exam_code}`,
-                            { method: "DELETE" }
+                            {
+                              method: "DELETE",
+                            }
                           );
                           if (!res.ok) throw new Error("Failed to delete exam");
                           fetchExams();
@@ -284,28 +306,20 @@ const AdminExamTable = () => {
                           className="border px-4 py-2"
                           rowSpan={q.choices.length}
                         >
-                          <button
-                            onClick={() => {
-                              setShowQuestionModal(true);
-                              setEditQuestionId(q.question_id);
-                              setCategoryName(q.category_name);
-                              setQuestionText(q.question_text);
-                              setChoices(
-                                q.choices.map(
-                                  (choice: { text: string; value: number }) =>
-                                    choice.text
-                                )
-                              );
-                              setValues(
-                                q.choices.map(
-                                  (choice: { text: string; value: number }) =>
-                                    choice.value
-                                )
-                              );
-                            }}
-                          >
-                            <FaEdit className="w-5 h-5 text-blue-500 hover:text-blue-700" />
-                          </button>
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => {
+                                setShowQuestionModal(true);
+                                setEditQuestionId(q.question_id);
+                                setCategoryName(q.category);
+                                setQuestionText(q.question);
+                                setChoices(q.choices.map((c: any) => c.text));
+                                setValues(q.choices.map((c: any) => c.value));
+                              }}
+                            >
+                              <FaEdit className="w-5 h-5 text-blue-500 hover:text-blue-700" />
+                            </button>
+                          </div>
                         </td>
                       )}
                     </tr>
