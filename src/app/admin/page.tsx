@@ -134,6 +134,16 @@ const AdminExamTable = () => {
           value: parseInt(values[i] as any, 10) || 0,
         })),
       });
+
+      console.log("EDITING question", editQuestionId, {
+        category_name: categoryName,
+        question_text: questionText,
+        choices: choices.map((text, i) => ({
+          text,
+          value: values[i],
+        })),
+      });
+      
       
 
       await fetch(url, {

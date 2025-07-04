@@ -7,10 +7,9 @@ export default async function handler(
 ) {
   const queryId = req.query.question_id as string | undefined;
   const bodyId = req.body?.question_id;
-  const questionId = parseInt(queryId || bodyId, 10); // Accept from either query or body
+  const questionId = parseInt(queryId || bodyId, 10);
 
   try {
-    /** GET: Fetch questions with choices */
     if (req.method === "GET") {
       const [rows]: any = await pool.query(`
         SELECT 
@@ -29,7 +28,6 @@ export default async function handler(
       return res.status(200).json(rows);
     }
 
-    /** POST: Add new question with category + choices */
     if (req.method === "POST") {
       const { category_name, question_text, choices } = req.body;
 
@@ -37,7 +35,6 @@ export default async function handler(
         return res.status(400).json({ error: "Missing fields" });
       }
 
-      // Check if category exists
       const [existingCategory]: any = await pool.query(
         "SELECT id FROM categories WHERE name = ?",
         [category_name]
@@ -54,14 +51,12 @@ export default async function handler(
         categoryId = catResult.insertId;
       }
 
-      // Insert question
       const [questionResult]: any = await pool.query(
         "INSERT INTO questions (category_id, text, created_at) VALUES (?, ?, NOW())",
         [categoryId, question_text]
       );
       const newQuestionId = questionResult.insertId;
 
-      // Insert choices
       for (const choice of choices) {
         await pool.query(
           "INSERT INTO choices (question_id, text, value, created_at) VALUES (?, ?, ?, NOW())",
@@ -72,7 +67,6 @@ export default async function handler(
       return res.status(201).json({ message: "Inserted successfully" });
     }
 
-    /** PUT: Update question, category, and choices */
     if (req.method === "PUT") {
       const { category_name, question_text, choices } = req.body;
 
@@ -89,7 +83,6 @@ export default async function handler(
       try {
         await connection.beginTransaction();
 
-        // Check if category exists or insert
         const [existingCategory]: any = await connection.query(
           "SELECT id FROM categories WHERE name = ?",
           [category_name]
@@ -106,18 +99,18 @@ export default async function handler(
           categoryId = catResult.insertId;
         }
 
-        // Update question
+
         await connection.query(
           "UPDATE questions SET text = ?, category_id = ? WHERE id = ?",
           [question_text, categoryId, questionId]
         );
 
-        // Delete old choices
+
         await connection.query("DELETE FROM choices WHERE question_id = ?", [
           questionId,
         ]);
 
-        // Insert new choices
+
         for (const choice of choices) {
           await connection.query(
             "INSERT INTO choices (question_id, text, value, created_at) VALUES (?, ?, ?, NOW())",
@@ -138,7 +131,6 @@ export default async function handler(
       }
     }
 
-    // Method Not Allowed
     res.setHeader("Allow", ["GET", "POST", "PUT"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   } catch (err) {
