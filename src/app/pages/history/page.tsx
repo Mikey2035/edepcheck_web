@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
 import { IoArrowBack } from "react-icons/io5";
 
 interface Result {
   id: string;
   total_score: number;
   severity: string;
+  submitted_at: string; // Add date field to show submission date
 }
 
 const getAdvice = (severity: string) => {
@@ -25,8 +25,8 @@ export default function HistoryPage() {
 
   // 🔐 Redirect if not logged in
   useEffect(() => {
-    const username = sessionStorage.getItem("username");
-    if (!username) {
+    const fullName = sessionStorage.getItem("fullName");
+    if (!fullName) {
       router.push("/sign");
     }
   }, [router]);
@@ -34,9 +34,20 @@ export default function HistoryPage() {
   // 🔄 Fetch user results
   useEffect(() => {
     const fetchResults = async () => {
-      const username = sessionStorage.getItem("username");
-      if (!username) return;
+      const fullName = sessionStorage.getItem("fullName");
+      if (!fullName) return;
 
+      try {
+        const response = await fetch(`/api/results?fullName=${encodeURIComponent(fullName)}`);
+        if (!response.ok) throw new Error("Failed to fetch results");
+        
+        const data = await response.json();
+        setResults(data.results); // Make sure your API returns { results: [...] }
+      } catch (error) {
+        console.error("Error fetching results:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchResults();
@@ -51,7 +62,7 @@ export default function HistoryPage() {
           className="text-blue-600 hover:text-blue-800 flex items-center"
         >
           <IoArrowBack className="mr-2" size={20} />
-          
+          Back
         </button>
       </div>
 
@@ -72,7 +83,7 @@ export default function HistoryPage() {
             >
               <p>
                 <strong>Date:</strong>{" "}
-                
+                {new Date(result.submitted_at).toLocaleDateString()}
               </p>
               <p>
                 <strong>Total Score:</strong> {result.total_score}
