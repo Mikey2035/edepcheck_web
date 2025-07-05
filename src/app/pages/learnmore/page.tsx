@@ -16,7 +16,7 @@ export default function LearnMorePage() {
   return (
     <>
       <Header />
-      <div className="bg-blue-50 min-h-screen py-10 px-4 flex items-center justify-center">
+      <div className="bg-[#FFB3B3] min-h-screen py-10 px-4 flex items-center justify-center">
         <div className="max-w-5xl w-full flex flex-col md:flex-row gap-10 items-center justify-center">
           {/* Left: Banner Image */}
           <div className="w-full md:w-1/2 h-72 md:h-[32rem] relative rounded-2xl overflow-hidden shadow-xl border-2 border-blue-200 flex-shrink-0">
