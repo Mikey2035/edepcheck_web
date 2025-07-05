@@ -103,8 +103,14 @@ export default function SignupPage() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-200 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-4xl bg-white/90 shadow-2xl rounded-3xl overflow-hidden flex flex-col md:flex-row border border-blue-200 backdrop-blur-md">
+      <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-[#A3D8F4] via-[#BFE6FC] to-[#E3F6FF] relative overflow-hidden">
+        {/* Floating bubbles background */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <span className="absolute left-10 top-10 w-24 h-24 bg-white/10 rounded-full blur-2xl animate-bubble1" />
+          <span className="absolute right-20 top-32 w-16 h-16 bg-white/20 rounded-full blur-xl animate-bubble2" />
+          <span className="absolute left-1/2 bottom-10 w-20 h-20 bg-white/10 rounded-full blur-2xl animate-bubble3" />
+        </div>
+        <div className="w-full max-w-4xl bg-white/70 backdrop-blur-lg shadow-2xl rounded-3xl overflow-hidden flex flex-col md:flex-row border border-blue-200 backdrop-blur-md relative z-10">
           {/* Left */}
           <div className="bg-blue-100 flex flex-col justify-center items-center p-10 gap-6 w-full md:w-2/5">
             <Image
@@ -113,7 +119,7 @@ export default function SignupPage() {
               width={120}
               height={120}
             />
-            <h2 className="text-3xl font-extrabold text-[#2C1E4A] text-center">
+            <h2 className="text-3xl font-extrabold text-[#2C1E4A] text-center font-modern">
               Join E-DepCheck
             </h2>
             <p className="text-lg text-center text-blue-900 px-4 italic">
@@ -123,7 +129,7 @@ export default function SignupPage() {
 
           {/* Right */}
           <div className="w-full md:w-3/5 p-10 flex flex-col justify-center">
-            <h1 className="text-2xl font-bold text-center text-[#2C1E4A] mb-6">
+            <h1 className="text-2xl font-bold text-center text-[#2C1E4A] mb-6 font-modern">
               Create an Account
             </h1>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -299,7 +305,7 @@ export default function SignupPage() {
 
               <button
                 type="submit"
-                className="w-full bg-[#2C1E4A] text-white py-2 rounded-md hover:bg-[#1f1532]"
+                className="w-full py-2 rounded-lg bg-gradient-to-r from-[#3A86FF] to-[#5F6CAF] text-white font-semibold shadow-lg hover:scale-105 transition-transform"
               >
                 Sign Up
               </button>
@@ -316,6 +322,31 @@ export default function SignupPage() {
             </p>
           </div>
         </div>
+        <style jsx global>{`
+          @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+          .font-modern {
+            font-family: 'Montserrat', Arial, Helvetica, sans-serif !important;
+            letter-spacing: -0.5px;
+          }
+          @keyframes bubble1 {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.1); }
+            100% { transform: translateY(0) scale(1); }
+          }
+          @keyframes bubble2 {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.05); }
+            100% { transform: translateY(0) scale(1); }
+          }
+          @keyframes bubble3 {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-18px) scale(1.08); }
+            100% { transform: translateY(0) scale(1); }
+          }
+          .animate-bubble1 { animation: bubble1 4s infinite ease-in-out; }
+          .animate-bubble2 { animation: bubble2 5s infinite ease-in-out; }
+          .animate-bubble3 { animation: bubble3 6s infinite ease-in-out; }
+        `}</style>
       </div>
     </>
   );
