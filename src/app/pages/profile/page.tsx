@@ -10,8 +10,10 @@ type User = {
   email: string;
   division: string;
   position: string;
-  role: string;
-  created_at: string;
+  birthday: string;
+  age: number;
+  sex_and_gender: string;
+  civil_status: string;
 };
 
 export default function ProfilePage() {
@@ -22,6 +24,8 @@ export default function ProfilePage() {
     fullname: "",
     division: "",
     position: "",
+    sex_and_gender: "",
+    civil_status: "",
   });
 
   useEffect(() => {
@@ -42,6 +46,8 @@ export default function ProfilePage() {
           fullname: data.fullname,
           division: data.division,
           position: data.position,
+          sex_and_gender: data.sex_and_gender,
+          civil_status: data.civil_status,
         });
       })
       .catch(() => {
@@ -54,8 +60,11 @@ export default function ProfilePage() {
     router.push("/sign/login");
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSave = async () => {
@@ -67,9 +76,7 @@ export default function ProfilePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: user.email,
-          fullname: formData.fullname,
-          division: formData.division,
-          position: formData.position,
+          ...formData,
         }),
       });
 
@@ -80,7 +87,6 @@ export default function ProfilePage() {
         return;
       }
 
-      // Update local state to reflect changes
       setUser((prev) => (prev ? { ...prev, ...formData } : null));
       setShowModal(false);
       alert("Profile updated successfully.");
@@ -105,7 +111,7 @@ export default function ProfilePage() {
       <h1 className="text-3xl font-bold text-blue-800 mb-6">Your Profile</h1>
 
       <div className="relative bg-white shadow rounded-lg p-6 space-y-4">
-        {/* Buttons Top-Right */}
+        {/* Buttons */}
         <div className="absolute top-4 right-4 flex gap-2">
           <button
             onClick={() => setShowModal(true)}
@@ -138,16 +144,24 @@ export default function ProfilePage() {
           <p>{user.position}</p>
         </div>
         <div>
-          <p className="text-sm text-gray-600">Role:</p>
-          <p>{user.role}</p>
+          <p className="text-sm text-gray-600">Birthday:</p>
+          <p>{new Date(user.birthday).toLocaleDateString()}</p>
         </div>
         <div>
-          <p className="text-sm text-gray-600">Account Created:</p>
-          <p>{new Date(user.created_at).toLocaleString()}</p>
+          <p className="text-sm text-gray-600">Age:</p>
+          <p>{user.age}</p>
+        </div>
+        <div>
+          <p className="text-sm text-gray-600">Sex and Gender:</p>
+          <p>{user.sex_and_gender}</p>
+        </div>
+        <div>
+          <p className="text-sm text-gray-600">Civil Status:</p>
+          <p>{user.civil_status}</p>
         </div>
       </div>
 
-      {/* ✨ Modal */}
+      {/* ✨ Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-md space-y-4 shadow-lg relative">
@@ -183,6 +197,39 @@ export default function ProfilePage() {
                 onChange={handleChange}
                 className="w-full mt-1 p-2 border rounded"
               />
+            </label>
+
+            <label className="block">
+              <span className="text-sm text-gray-600">Sex and Gender</span>
+              <select
+                name="sex_and_gender"
+                value={formData.sex_and_gender}
+                onChange={handleChange}
+                className="w-full mt-1 p-2 border rounded"
+              >
+                <option value="">Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Transgender">Transgender</option>
+                <option value="Non-binary">Non-binary</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="text-sm text-gray-600">Civil Status</span>
+              <select
+                name="civil_status"
+                value={formData.civil_status}
+                onChange={handleChange}
+                className="w-full mt-1 p-2 border rounded"
+              >
+                <option value="">Select</option>
+                <option value="Single">Single</option>
+                <option value="Married">Married</option>
+                <option value="Divorced">Divorced</option>
+                <option value="Widowed">Widowed</option>
+              </select>
             </label>
 
             <div className="flex justify-end gap-2 mt-4">

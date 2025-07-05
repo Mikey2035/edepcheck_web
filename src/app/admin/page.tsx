@@ -39,26 +39,18 @@ const AdminExamTable = () => {
     try {
       const response = await fetch("/api/exams");
       const data = await response.json();
-
-      if (!Array.isArray(data)) {
-        console.error("Unexpected response:", data);
-        setExams([]); // Prevent .map() error
-        return;
-      }
-
+      if (!Array.isArray(data)) return setExams([]);
       setExams(data);
     } catch (err) {
       console.error("Failed to fetch exams:", err);
       setExams([]);
     }
   };
-  
 
   const fetchQuestions = async () => {
     try {
       const response = await fetch("/api/questions");
       const data = await response.json();
-
       const grouped = data.reduce((acc: any, curr: any) => {
         const key = curr.question_id;
         if (!acc[key]) {
@@ -75,21 +67,60 @@ const AdminExamTable = () => {
         });
         return acc;
       }, {});
-
       setQuestionsData(Object.values(grouped));
     } catch (err) {
       console.error("Failed to fetch questions:", err);
     }
   };
 
+  const handleDeleteQuestion = async (questionId: number) => {
+    try {
+      const res = await fetch(`/api/questions?question_id=${questionId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete question");
+      fetchQuestions();
+    } catch (err) {
+      console.error("Error deleting question:", err);
+    }
+  };
+
+  const handleQuestionSubmit = async () => {
+    if (!categoryName || !questionText || choices.some((c) => !c)) return;
+
+    const url = editQuestionId
+      ? `/api/questions?question_id=${editQuestionId}`
+      : "/api/questions";
+    const method = editQuestionId ? "PUT" : "POST";
+
+    await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        category_name: categoryName,
+        question_text: questionText,
+        choices: choices.map((text, i) => ({
+          text,
+          value: parseInt(values[i] as any, 10) || 0,
+        })),
+      }),
+    });
+
+    setCategoryName("");
+    setQuestionText("");
+    setChoices(["", "", "", ""]);
+    setValues([0, 0, 0, 0]);
+    setEditQuestionId(null);
+    setShowQuestionModal(false);
+    fetchQuestions();
+  };
+
   const handleAddOrEditExam = async () => {
     if (!title || !date) return;
-
     const formattedDate = new Date(date);
     const exam_code = editExam
       ? editExam.exam_code
       : formattedDate.toISOString().slice(0, 10).replace(/-/g, "");
-
     const examData = {
       exam_code,
       title,
@@ -97,16 +128,13 @@ const AdminExamTable = () => {
       total_examinees: 0,
       exam_date: formattedDate.toISOString().slice(0, 10),
     };
-
     try {
       const res = await fetch("/api/exams", {
         method: editExam ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(examData),
       });
-
       if (!res.ok) throw new Error("Failed to save exam");
-
       setTitle("");
       setDate("");
       setShowModal(false);
@@ -117,70 +145,15 @@ const AdminExamTable = () => {
     }
   };
 
-  const handleQuestionSubmit = async () => {
-    if (!categoryName || !questionText || choices.some((c) => !c)) return;
-
-    try {
-      const url = editQuestionId
-        ? `/api/questions?question_id=${editQuestionId}`
-        : "/api/questions";
-      const method = editQuestionId ? "PUT" : "POST";
-
-      console.log("Submitting question:", {
-        category_name: categoryName,
-        question_text: questionText,
-        choices: choices.map((text, i) => ({
-          text,
-          value: parseInt(values[i] as any, 10) || 0,
-        })),
-      });
-
-      console.log("EDITING question", editQuestionId, {
-        category_name: categoryName,
-        question_text: questionText,
-        choices: choices.map((text, i) => ({
-          text,
-          value: values[i],
-        })),
-      });
-      
-      
-
-      await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          category_name: categoryName,
-          question_text: questionText,
-          choices: choices.map((text, i) => ({
-            text,
-            value: parseInt(values[i] as any, 10) || 0, // Ensure value is a number
-          })),
-        }),
-      });
-      
-
-      setCategoryName("");
-      setQuestionText("");
-      setChoices(["", "", "", ""]);
-      setValues([0, 0, 0, 0]);
-      setEditQuestionId(null);
-      setShowQuestionModal(false);
-      fetchQuestions();
-    } catch (err) {
-      console.error("Failed to submit question:", err);
-    }
-  };
-
-  const handleLogout = () => {
-    sessionStorage.clear();
-    router.push("/sign/login");
-  };
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toISOString().slice(0, 10);
   };
+  const handleLogout = () => {
+    localStorage.clear();
+    router.push("/sign/login");
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -188,37 +161,34 @@ const AdminExamTable = () => {
         {/* Exams Table */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Examinations</h2>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowModal(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              {editExam ? "Edit Exam" : "Add Exam"}
-            </button>
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-              Log Out
-            </button>
-          </div>
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            {editExam ? "Edit Exam" : "Add Exam"}
+          </button>
+          <button
+            onClick={handleLogout}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Log Out
+          </button>
         </div>
-
         <div className="overflow-x-auto">
           <table className="w-full border border-gray-300 table-auto">
             <thead className="bg-gray-100">
               <tr>
                 <th className="border px-4 py-2">Exam Code</th>
-                <th className="border px-4 py-2">Examination Title</th>
+                <th className="border px-4 py-2">Title</th>
                 <th className="border px-4 py-2">Severity</th>
-                <th className="border px-4 py-2">Total Examinees</th>
-                <th className="border px-4 py-2">Exam Date</th>
+                <th className="border px-4 py-2">Examinees</th>
+                <th className="border px-4 py-2">Date</th>
                 <th className="border px-4 py-2">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {exams.map((exam, index) => (
-                <tr key={index}>
+              {exams.map((exam) => (
+                <tr key={exam.exam_code}>
                   <td className="border px-4 py-2">{exam.exam_code}</td>
                   <td className="border px-4 py-2">
                     <Link href={`/admin/examinees/${exam.exam_code}`}>
@@ -266,7 +236,7 @@ const AdminExamTable = () => {
           </table>
         </div>
 
-        {/* Questions Table */}
+        {/* Questions Table (Already existing, unchanged) */}
         <div className="mt-10">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold">Mental Health Questions</h3>
@@ -290,9 +260,9 @@ const AdminExamTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {questionsData.map((q, idx) =>
+                {questionsData.map((q) =>
                   q.choices.map((choice: any, i: number) => (
-                    <tr key={`${idx}-${i}`}>
+                    <tr key={`${q.question_id}-${i}`}>
                       {i === 0 && (
                         <>
                           <td
@@ -329,6 +299,13 @@ const AdminExamTable = () => {
                             >
                               <FaEdit className="w-5 h-5 text-blue-500 hover:text-blue-700" />
                             </button>
+                            <button
+                              onClick={() =>
+                                handleDeleteQuestion(q.question_id)
+                              }
+                            >
+                              <FaTrash className="w-5 h-5 text-red-500 hover:text-red-700" />
+                            </button>
                           </div>
                         </td>
                       )}
@@ -341,7 +318,7 @@ const AdminExamTable = () => {
         </div>
       </div>
 
-      {/* Add Exam Modal */}
+      {/* Exam Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
@@ -387,15 +364,13 @@ const AdminExamTable = () => {
         </div>
       )}
 
+      {/* Question Modal */}
       {showQuestionModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-md w-full max-w-lg">
             <h3 className="text-xl font-semibold mb-4">
-              {editQuestionId
-                ? "Edit Mental Health Question"
-                : "Add Mental Health Question"}
+              {editQuestionId ? "Edit Question" : "Add Question"}
             </h3>
-
             <div className="mb-4">
               <label className="block mb-1 text-sm">Category</label>
               <input
@@ -405,7 +380,6 @@ const AdminExamTable = () => {
                 className="w-full border p-2 rounded"
               />
             </div>
-
             <div className="mb-4">
               <label className="block mb-1 text-sm">Question</label>
               <input
@@ -415,7 +389,6 @@ const AdminExamTable = () => {
                 className="w-full border p-2 rounded"
               />
             </div>
-
             {choices.map((choice, i) => (
               <div className="flex gap-2 mb-2" key={i}>
                 <input
@@ -442,7 +415,6 @@ const AdminExamTable = () => {
                 />
               </div>
             ))}
-
             <div className="flex justify-end space-x-2 mt-4">
               <button
                 onClick={() => {

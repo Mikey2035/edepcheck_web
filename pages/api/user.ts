@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
       const [rows]: any = await pool.query(
-        'SELECT id, fullname, email, division, position, role, created_at FROM users WHERE email = ?',
+        'SELECT id, fullname, email, division, position, birthday, age, sex_and_gender, civil_status FROM users WHERE email = ?',
         [email]
       );
 
@@ -23,16 +23,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === 'PUT') {
-    const { email, fullname, division, position } = req.body;
+    const {
+      email,
+      fullname,
+      division,
+      position,
+      sex_and_gender,
+      civil_status,
+    } = req.body;
 
-    if (!email || !fullname || !division || !position) {
+    if (!email || !fullname || !division || !position || !sex_and_gender || !civil_status) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
     try {
       const [result]: any = await pool.query(
-        'UPDATE users SET fullname = ?, division = ?, position = ? WHERE email = ?',
-        [fullname, division, position, email]
+        "UPDATE users SET fullname = ?, division = ?, position = ?, sex_and_gender = ?, civil_status = ? WHERE email = ?",
+        [fullname, division, position, sex_and_gender, civil_status, email]
       );
 
       if (result.affectedRows === 0) {

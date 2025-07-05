@@ -13,11 +13,12 @@ interface Choice {
 interface Question {
   id: number;
   text: string;
+  category_name: string; // ✅ Added category_name
   choices: Choice[];
 }
 
 const getSeverity = (score: number) => {
-  if (score <= 4) return "Minimal depression";
+  if (score <= 4) return "Minimal depression or No Depression";
   if (score <= 9) return "Mild depression";
   if (score <= 14) return "Moderate depression";
   if (score <= 19) return "Moderately severe depression";
@@ -25,7 +26,7 @@ const getSeverity = (score: number) => {
 };
 
 const getAdvice = (severity: string) => {
-  if (severity === "Minimal depression" || severity === "Mild depression") {
+  if (severity === "Minimal depression or No Depression" || severity === "Mild depression") {
     return "You may seek guidance from our admin team.";
   }
   return "It is recommended to consult a mental health professional.";
@@ -149,26 +150,48 @@ export default function QuestionnairePage() {
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {questions.map((question, idx) => (
-          <div key={question.id}>
-            <p className="font-medium">
-              {idx + 1}. {question.text}
-            </p>
-            <div className="flex gap-4 mt-2">
-              {question.choices.map((opt) => (
-                <label key={opt.id} className="flex items-center gap-1 text-sm">
-                  <input
-                    type="radio"
-                    name={`q-${idx}`}
-                    value={opt.value}
-                    checked={answers[idx] === opt.value}
-                    onChange={() => handleChange(idx, opt.value)}
-                    required
-                  />
-                  {opt.text}
-                </label>
-              ))}
-            </div>
+        {Object.entries(
+          questions.reduce((acc: Record<string, Question[]>, question) => {
+            if (!acc[question.category_name]) acc[question.category_name] = [];
+            acc[question.category_name].push(question);
+            return acc;
+          }, {})
+        ).map(([categoryName, categoryQuestions]) => (
+          <div key={categoryName} className="mb-6">
+            <h2 className="text-lg font-semibold text-blue-700 mb-2">
+              {categoryName}
+            </h2>
+
+            {categoryQuestions.map((question) => {
+              const globalIndex = questions.findIndex(
+                (q) => q.id === question.id
+              );
+              return (
+                <div key={question.id} className="mb-4">
+                  <p className="font-medium">
+                    {globalIndex + 1}. {question.text}
+                  </p>
+                  <div className="flex gap-4 mt-2 flex-wrap">
+                    {question.choices.map((opt) => (
+                      <label
+                        key={opt.id}
+                        className="flex items-center gap-1 text-sm"
+                      >
+                        <input
+                          type="radio"
+                          name={`q-${globalIndex}`}
+                          value={opt.value}
+                          checked={answers[globalIndex] === opt.value}
+                          onChange={() => handleChange(globalIndex, opt.value)}
+                          required
+                        />
+                        {opt.text}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         ))}
 
@@ -188,15 +211,105 @@ export default function QuestionnairePage() {
             <h2 className="text-xl font-bold text-blue-700 mb-2">
               Your Assessment Result
             </h2>
+
             <p>
               <strong>Total Score:</strong> {score}
             </p>
             <p>
               <strong>Severity:</strong> {severity}
             </p>
-            <p className="mt-2 text-sm italic text-gray-700">
-              {getAdvice(severity)}
-            </p>
+
+            <div className="mt-4 text-sm text-gray-700">
+              <strong>What this means:</strong>
+              <div className="mt-1 space-y-2">
+                {severity === "Minimal depression or No Depression" && (
+                  <>
+                    <p>
+                      Your responses suggest little to no signs of depression.
+                    </p>
+                    <p>
+                      <strong>Common symptoms (if any):</strong> Occasional
+                      sadness, mild fatigue, or stress that usually resolves on
+                      its own.
+                    </p>
+                    <p>
+                      <strong>What to do:</strong> Maintain your healthy habits,
+                      stay socially connected, and keep monitoring your mental
+                      well-being.
+                    </p>
+                  </>
+                )}
+
+                {severity === "Mild depression" && (
+                  <>
+                    <p>Your score indicates mild depression.</p>
+                    <p>
+                      <strong>Common symptoms:</strong> Feeling down, reduced
+                      energy, mild sleep difficulties, or reduced enjoyment in
+                      daily activities.
+                    </p>
+                    <p>
+                      <strong>What to do:</strong> Engage in self-care
+                      activities, talk to friends or family, exercise regularly,
+                      and practice mindfulness. Seek support if symptoms
+                      persist.
+                    </p>
+                  </>
+                )}
+
+                {severity === "Moderate depression" && (
+                  <>
+                    <p>You may be experiencing moderate depression.</p>
+                    <p>
+                      <strong>Common symptoms:</strong> Persistent sadness, low
+                      motivation, social withdrawal, trouble sleeping or
+                      overeating, and difficulty focusing.
+                    </p>
+                    <p>
+                      <strong>What to do:</strong> Consider talking to a mental
+                      health counselor or joining a support group. Early
+                      intervention can help improve your well-being.
+                    </p>
+                  </>
+                )}
+
+                {severity === "Moderately severe depression" && (
+                  <>
+                    <p>Your score shows moderately severe depression.</p>
+                    <p>
+                      <strong>Common symptoms:</strong> Constant sadness,
+                      hopelessness, fatigue, significant appetite or sleep
+                      changes, and possible thoughts of self-harm.
+                    </p>
+                    <p>
+                      <strong>What to do:</strong> Seek help from a licensed
+                      mental health professional. Therapy, counseling, or
+                      support groups can help you cope and recover.
+                    </p>
+                  </>
+                )}
+
+                {severity === "Severe depression" && (
+                  <>
+                    <p>
+                      This score indicates severe depression, which is a serious
+                      concern.
+                    </p>
+                    <p>
+                      <strong>Common symptoms:</strong> Overwhelming sadness,
+                      isolation, extreme fatigue, feelings of worthlessness, and
+                      frequent thoughts of self-harm or suicide.
+                    </p>
+                    <p>
+                      <strong>What to do:</strong> Please seek immediate
+                      professional help. Contact a mental health crisis line or
+                      visit a mental health clinic as soon as possible for your
+                      safety.
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
 
             {[
               "Moderate depression",
@@ -204,7 +317,9 @@ export default function QuestionnairePage() {
               "Severe depression",
             ].includes(severity) && (
               <div className="mt-4 text-sm text-blue-700">
-                <p className="font-semibold mb-1">Support Resources:</p>
+                <p className="font-semibold mb-1">
+                  Recommended Support Resources:
+                </p>
                 <ul className="list-disc ml-6 space-y-1">
                   <li>
                     <a
@@ -212,7 +327,7 @@ export default function QuestionnairePage() {
                       target="_blank"
                       className="underline"
                     >
-                      DOH Mental Health Hotline
+                      DOH Mental Health Hotline (Philippines)
                     </a>
                   </li>
                   <li>
@@ -221,7 +336,7 @@ export default function QuestionnairePage() {
                       target="_blank"
                       className="underline"
                     >
-                      MentalHealthPH
+                      MentalHealthPH - Mental Health Support
                     </a>
                   </li>
                   <li>

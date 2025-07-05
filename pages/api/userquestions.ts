@@ -1,12 +1,15 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { pool } from '@/configs/database';
+import type { NextApiRequest, NextApiResponse } from "next";
+import { pool } from "@/configs/database";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'GET') {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method === "GET") {
     try {
       const [rows]: any = await pool.query(`
         SELECT 
-          c.name AS category,
+          c.name AS category_name,         -- ✅ Renamed from 'category'
           q.id AS question_id,
           q.text AS question_text,
           ch.id AS choice_id,
@@ -15,17 +18,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         FROM questions q
         JOIN categories c ON q.category_id = c.id
         JOIN choices ch ON ch.question_id = q.id
-        ORDER BY q.id, ch.id
+        ORDER BY c.name, q.id, ch.id       -- ✅ Group by category first
       `);
 
-      const questionsMap: any = {};
+      const questionsMap: Record<number, any> = {};
 
       for (const row of rows) {
         if (!questionsMap[row.question_id]) {
           questionsMap[row.question_id] = {
             id: row.question_id,
             text: row.question_text,
-            category: row.category,
+            category_name: row.category_name, // ✅ This matches the frontend
             choices: [],
           };
         }

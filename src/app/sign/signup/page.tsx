@@ -24,6 +24,9 @@ export default function SignupPage() {
     confirmPassword: "",
     division: "",
     position: "",
+    birthday: "",
+    sex_and_gender: "",
+    civil_status: "",
   });
 
   const [statusMessage, setStatusMessage] = useState("");
@@ -40,8 +43,17 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { fullName, email, password, confirmPassword, division, position } =
-      formData;
+    const {
+      fullName,
+      email,
+      password,
+      confirmPassword,
+      division,
+      position,
+      birthday,
+      sex_and_gender,
+      civil_status,
+    } = formData;
 
     if (
       !fullName ||
@@ -49,9 +61,12 @@ export default function SignupPage() {
       !password ||
       !confirmPassword ||
       !division ||
-      !position
+      !position ||
+      !birthday ||
+      !sex_and_gender ||
+      !civil_status
     ) {
-      setStatusMessage("Please fill in all fields.");
+      setStatusMessage("Please fill in all required fields.");
       setIsSuccessful(false);
       return;
     }
@@ -90,16 +105,15 @@ export default function SignupPage() {
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-200 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-4xl bg-white/90 shadow-2xl rounded-3xl overflow-hidden flex flex-col md:flex-row border border-blue-200 backdrop-blur-md">
-          {/* Left Section */}
-          <div className="bg-blue-100 flex flex-col justify-center items-center p-10 gap-6 w-full md:w-2/5 group cursor-pointer">
+          {/* Left */}
+          <div className="bg-blue-100 flex flex-col justify-center items-center p-10 gap-6 w-full md:w-2/5">
             <Image
               src="/images/e.png"
               alt="E-DepCheck"
               width={120}
               height={120}
-              className="transition-transform duration-300 group-hover:scale-110 drop-shadow-lg"
             />
-            <h2 className="text-3xl font-extrabold text-[#2C1E4A] text-center transition-transform duration-300 group-hover:scale-110">
+            <h2 className="text-3xl font-extrabold text-[#2C1E4A] text-center">
               Join E-DepCheck
             </h2>
             <p className="text-lg text-center text-blue-900 px-4 italic">
@@ -107,9 +121,9 @@ export default function SignupPage() {
             </p>
           </div>
 
-          {/* Right Form Section */}
+          {/* Right */}
           <div className="w-full md:w-3/5 p-10 flex flex-col justify-center">
-            <h1 className="text-2xl font-bold text-center text-[#2C1E4A] mb-6 tracking-tight">
+            <h1 className="text-2xl font-bold text-center text-[#2C1E4A] mb-6">
               Create an Account
             </h1>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -141,14 +155,14 @@ export default function SignupPage() {
               ].map(({ icon: Icon, ...input }) => (
                 <div
                   key={input.name}
-                  className="flex items-center border rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-blue-300 transition"
+                  className="flex items-center border rounded-md px-3 py-2"
                 >
                   <Icon className="text-blue-400 mr-3" />
                   <input
                     {...input}
                     value={(formData as any)[input.name]}
                     onChange={handleChange}
-                    className="w-full outline-none text-sm bg-transparent transition-all duration-300 transform focus:scale-105 hover:scale-105 focus:border-blue-500 hover:border-blue-400 border-none"
+                    className="w-full outline-none text-sm bg-transparent"
                     required
                   />
                 </div>
@@ -161,14 +175,12 @@ export default function SignupPage() {
                   name="division"
                   value={formData.division}
                   onChange={handleChange}
-                  className={`w-full outline-none text-sm bg-transparent transition-all duration-300 transform focus:scale-105 hover:scale-105 focus:border-blue-500 hover:border-blue-400 border-none ${
+                  className={`w-full outline-none text-sm bg-transparent ${
                     formData.division ? "text-black" : "text-gray-400"
                   }`}
                   required
                 >
-                  <option value="" disabled>
-                    Select Division
-                  </option>
+                  <option value="">Select Division</option>
                   <option value="Finance and Administration">
                     Finance and Administration
                   </option>
@@ -191,7 +203,47 @@ export default function SignupPage() {
                 </select>
               </div>
 
-              {/* Password Field */}
+              {/* Birthday */}
+              <input
+                type="date"
+                name="birthday"
+                value={formData.birthday}
+                onChange={handleChange}
+                className="w-full border rounded-md px-3 py-2 text-sm"
+                required
+              />
+
+              {/* Sex and Gender (Dropdown) */}
+              <select
+                name="sex_and_gender"
+                value={formData.sex_and_gender}
+                onChange={handleChange}
+                className="w-full border rounded-md px-3 py-2 text-sm"
+                required
+              >
+                <option value="">Select Sex and Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Transgender">Transgender</option>
+                <option value="Non-binary">Non-binary</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+
+              {/* Civil Status */}
+              <select
+                name="civil_status"
+                value={formData.civil_status}
+                onChange={handleChange}
+                className="w-full border rounded-md px-3 py-2 text-sm"
+                required
+              >
+                <option value="">Select Civil Status</option>
+                <option value="Single">Single</option>
+                <option value="Married">Married</option>
+                <option value="Widowed">Widowed</option>
+                <option value="Divorced">Divorced</option>
+              </select>
+
               <div className="flex items-center border rounded-md px-3 py-2 relative">
                 <FaLock className="text-blue-400 mr-3" />
                 <input
@@ -200,7 +252,7 @@ export default function SignupPage() {
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full outline-none text-sm bg-transparent transition-all duration-300 transform focus:scale-105 hover:scale-105 focus:border-blue-500 hover:border-blue-400 border-none"
+                  className="w-full outline-none text-sm bg-transparent"
                   required
                 />
                 <button
@@ -212,7 +264,6 @@ export default function SignupPage() {
                 </button>
               </div>
 
-              {/* Confirm Password Field */}
               <div className="flex items-center border rounded-md px-3 py-2 relative">
                 <FaLock className="text-blue-400 mr-3" />
                 <input
@@ -221,7 +272,7 @@ export default function SignupPage() {
                   placeholder="Confirm Password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full outline-none text-sm bg-transparent transition-all duration-300 transform focus:scale-105 hover:scale-105 focus:border-blue-500 hover:border-blue-400 border-none"
+                  className="w-full outline-none text-sm bg-transparent"
                   required
                 />
                 <button
@@ -248,7 +299,7 @@ export default function SignupPage() {
 
               <button
                 type="submit"
-                className="w-full bg-[#2C1E4A] text-white py-2 rounded-md hover:bg-[#1f1532] transition"
+                className="w-full bg-[#2C1E4A] text-white py-2 rounded-md hover:bg-[#1f1532]"
               >
                 Sign Up
               </button>
