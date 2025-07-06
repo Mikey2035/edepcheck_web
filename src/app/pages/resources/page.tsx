@@ -55,7 +55,7 @@ export default function ResourcesPage() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-blue-50 py-10 px-4">
+      <div className="min-h-screen bg-[#FFF3B0] py-10 px-4">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-5xl sm:text-6xl font-extrabold text-[#2C1E4A] leading-tight mb-8 flex items-center gap-2">
             <FaHeartbeat className="text-red-600" />

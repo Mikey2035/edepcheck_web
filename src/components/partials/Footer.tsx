@@ -3,23 +3,54 @@ import { FaBrain } from "react-icons/fa";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-blue-100 text-blue-900 py-8 px-6 shadow-inner">
+    <footer
+      className="py-8 px-6 shadow-inner overflow-hidden"
+      style={{
+        background: "linear-gradient(90deg, #3A86FF 0%, #5F6CAF 100%)",
+        color: "white",
+      }}
+    >
+      {/* Decorative curved top edge */}
+      <div className="absolute left-0 right-0 top-0 w-full h-8 pointer-events-none z-20">
+        <svg
+          viewBox="0 0 100 10"
+          preserveAspectRatio="none"
+          className="w-full h-full"
+        >
+          <path
+            d="M0,10 Q50,-10 100,10 L100,0 L0,0 Z"
+            fill="url(#footerGradient)"
+          />
+          <defs>
+            <linearGradient
+              id="footerGradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="0%"
+            >
+              <stop offset="0%" stopColor="#3A86FF" />
+              <stop offset="100%" stopColor="#5F6CAF" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
       <div className="max-w-6xl mx-auto flex flex-col items-center text-center gap-2">
         {/* Logo/Brand */}
         <div className="flex items-center gap-2 mb-2">
-          <FaBrain className="text-2xl text-[#2C1E4A]" />
-          <h2 className="text-2xl font-black tracking-tight text-[#2C1E4A]">
+          <FaBrain className="text-2xl text-white" />
+          <h2 className="text-2xl font-black tracking-tight text-white">
             E-DepCheck
           </h2>
         </div>
 
         {/* Tagline */}
-        <p className="text-base italic font-medium">
+        <p className="text-base italic font-medium text-white">
           "Your Mental Health Matters."
         </p>
 
         {/* Copyright */}
-        <p className="text-sm text-blue-800 mt-2">
+        <p className="text-sm text-white mt-2">
           &copy; 2025 E-DepCheck. All rights reserved.
         </p>
       </div>

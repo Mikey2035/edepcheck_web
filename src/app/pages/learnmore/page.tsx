@@ -16,7 +16,7 @@ export default function LearnMorePage() {
   return (
     <>
       <Header />
-      <div className="bg-blue-50 min-h-screen py-10 px-4 flex items-center justify-center">
+      <div className="bg-[#FFB3B3] min-h-screen py-10 px-4 flex items-center justify-center">
         <div className="max-w-5xl w-full flex flex-col md:flex-row gap-10 items-center justify-center">
           {/* Left: Banner Image */}
           <div className="w-full md:w-1/2 h-72 md:h-[32rem] relative rounded-2xl overflow-hidden shadow-xl border-2 border-blue-200 flex-shrink-0">
@@ -30,7 +30,7 @@ export default function LearnMorePage() {
           </div>
           {/* Right: Details */}
           <div className="flex-1 flex flex-col gap-8">
-            <Link href="/symptomscauses">
+            
               <div className="bg-white p-8 rounded-2xl shadow-lg cursor-pointer hover:bg-blue-50 hover:scale-105 transition-all duration-300 border border-blue-100 group">
                 <div className="flex items-center gap-3 mb-2 text-purple-700 font-bold text-lg">
                   <MdPsychology
@@ -47,7 +47,7 @@ export default function LearnMorePage() {
                   environmental, such as genetics, trauma, or chronic stress.
                 </p>
               </div>
-            </Link>
+            
 
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-blue-100 hover:scale-105 transition-all duration-300 group">
               <div className="flex items-center gap-3 mb-2 text-red-600 font-bold text-lg">

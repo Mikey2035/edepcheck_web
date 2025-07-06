@@ -74,7 +74,7 @@ const ExamineeListPage = () => {
                     <td className="border px-4 py-2">{res.exam_code}</td>
                     <td className="border px-4 py-2">
                       <Link
-                        href={`/admin/examinees/${exam_code}/${encodeURIComponent(
+                        href={`/admin/tables/examinees/${exam_code}/${encodeURIComponent(
                           res.fullname
                         )}`}
                       >

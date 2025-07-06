@@ -10,6 +10,14 @@ export default async function handler(
   const questionId = parseInt(queryId || bodyId, 10);
 
   try {
+    // ✅ CATEGORY FETCH ONLY
+    if (req.method === "GET" && req.query.categories === "1") {
+      const [categories]: any = await pool.query(
+        "SELECT id, name FROM categories ORDER BY created_at DESC"
+      );
+      return res.status(200).json(categories);
+    }
+
     if (req.method === "GET") {
       const [rows]: any = await pool.query(`
         SELECT 
@@ -26,6 +34,21 @@ export default async function handler(
       `);
 
       return res.status(200).json(rows);
+    }
+
+    // ✅ CATEGORY INSERT ONLY
+    if (req.method === "POST" && req.body?.only_category) {
+      const { category_name } = req.body;
+      if (!category_name) {
+        return res.status(400).json({ error: "Category name is required" });
+      }
+
+      await pool.query(
+        "INSERT INTO categories (name, created_at) VALUES (?, NOW())",
+        [category_name]
+      );
+
+      return res.status(201).json({ message: "Category added successfully" });
     }
 
     if (req.method === "POST") {
@@ -99,17 +122,14 @@ export default async function handler(
           categoryId = catResult.insertId;
         }
 
-
         await connection.query(
           "UPDATE questions SET text = ?, category_id = ? WHERE id = ?",
           [question_text, categoryId, questionId]
         );
 
-
         await connection.query("DELETE FROM choices WHERE question_id = ?", [
           questionId,
         ]);
-
 
         for (const choice of choices) {
           await connection.query(
