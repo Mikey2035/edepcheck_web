@@ -7,9 +7,11 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     try {
-      const [rows]: any = await pool.query(`
+      // ✅ No need to filter by exam_code
+      const [rows]: any = await pool.query(
+        `
         SELECT 
-          c.name AS category_name,         -- ✅ Renamed from 'category'
+          c.name AS category_name,
           q.id AS question_id,
           q.text AS question_text,
           ch.id AS choice_id,
@@ -18,8 +20,9 @@ export default async function handler(
         FROM questions q
         JOIN categories c ON q.category_id = c.id
         JOIN choices ch ON ch.question_id = q.id
-        ORDER BY c.name, q.id, ch.id       -- ✅ Group by category first
-      `);
+        ORDER BY c.name, q.id, ch.id
+      `
+      );
 
       const questionsMap: Record<number, any> = {};
 
@@ -28,7 +31,7 @@ export default async function handler(
           questionsMap[row.question_id] = {
             id: row.question_id,
             text: row.question_text,
-            category_name: row.category_name, // ✅ This matches the frontend
+            category_name: row.category_name,
             choices: [],
           };
         }

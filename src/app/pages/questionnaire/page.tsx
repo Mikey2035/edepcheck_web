@@ -13,7 +13,7 @@ interface Choice {
 interface Question {
   id: number;
   text: string;
-  category_name: string; // ✅ Added category_name
+  category_name: string;
   choices: Choice[];
 }
 
@@ -23,13 +23,6 @@ const getSeverity = (score: number) => {
   if (score <= 14) return "Moderate depression";
   if (score <= 19) return "Moderately severe depression";
   return "Severe depression";
-};
-
-const getAdvice = (severity: string) => {
-  if (severity === "Minimal depression or No Depression" || severity === "Mild depression") {
-    return "You may seek guidance from our admin team.";
-  }
-  return "It is recommended to consult a mental health professional.";
 };
 
 export default function QuestionnairePage() {
@@ -46,7 +39,7 @@ export default function QuestionnairePage() {
 
   useEffect(() => {
     const fullName = sessionStorage.getItem("fullName");
-    if (!fullName || fullName === "null" || fullName === "undefined") {
+    if (!fullName) {
       router.push("/sign/login");
       return;
     }
@@ -71,14 +64,28 @@ export default function QuestionnairePage() {
 
     const fetchQuestions = async () => {
       try {
-        const res = await fetch("/api/userquestions");
+        const res = await fetch(`/api/userquestions?exam_code=${exam_code}`);
         const data = await res.json();
-        setQuestions(data);
-        setAnswers(Array(data.length).fill(-1));
+
+        const questionArray = Array.isArray(data)
+          ? data
+          : Array.isArray(data.questions)
+          ? data.questions
+          : [];
+
+        if (!questionArray.length) {
+          console.error("Invalid questions format:", data);
+          setQuestions([]);
+          return;
+        }
+
+        setQuestions(questionArray);
+        setAnswers(Array(questionArray.length).fill(-1));
       } catch (err) {
         console.error("Error fetching questions:", err);
       }
     };
+    
 
     fetchExamTitle();
     fetchQuestions();
@@ -155,12 +162,15 @@ export default function QuestionnairePage() {
 
         <form onSubmit={handleSubmit} className="space-y-10">
           {Object.entries(
-            questions.reduce((acc: Record<string, Question[]>, question) => {
-              if (!acc[question.category_name])
-                acc[question.category_name] = [];
-              acc[question.category_name].push(question);
-              return acc;
-            }, {})
+            (Array.isArray(questions) ? questions : []).reduce(
+              (acc: Record<string, Question[]>, question) => {
+                if (!acc[question.category_name])
+                  acc[question.category_name] = [];
+                acc[question.category_name].push(question);
+                return acc;
+              },
+              {}
+            )
           ).map(([categoryName, categoryQuestions]) => (
             <div key={categoryName} className="mb-6">
               <h2 className="text-xl font-semibold text-blue-700 mb-4 border-b pb-1">
@@ -224,6 +234,7 @@ export default function QuestionnairePage() {
           </div>
         </form>
 
+        {/* MODAL SECTION */}
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
             <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
@@ -391,4 +402,4 @@ export default function QuestionnairePage() {
       </div>
     </div>
   );
-}  
+}
