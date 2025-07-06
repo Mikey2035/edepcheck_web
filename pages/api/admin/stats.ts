@@ -9,12 +9,16 @@ export default async function handler(
     const { groupBy, division, severity, position, age, sex_and_gender } =
       req.query;
 
-    const allowedGroupFields = [
-      "division",
-      "position",
-      "age",
-      "sex_and_gender",
-    ];
+      const allowedGroupFields = [
+        "division",
+        "position",
+        "age",
+        "sex_and_gender",
+        "civil_status", // ✅ Add this
+      ];
+
+    
+      
     const groupField = allowedGroupFields.includes(groupBy as string)
       ? groupBy
       : "division";

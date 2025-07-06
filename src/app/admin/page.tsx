@@ -34,22 +34,31 @@ type GroupedSeverityData = {
 function getSeverityColor(severity: string) {
   switch (severity.toLowerCase()) {
     case "minimal depression or no depression":
-      return "#3b82f6";
+      return "#f2e7b1"; // pale Yellow
     case "mild depression":
-      return "#67e8f9";
+      return "#fcd116"; // Yellow
     case "moderate depression":
-      return "#f472b6";
+      return "#A3D8F4"; // Light Blue
     case "moderately severe depression":
-      return "#f9a8d4";
+      return "#f2888d"; // Light Pink
     case "severe depression":
-      return "#dc2626";
+      return "#c8272d"; // Red
     default:
-      return "#a3a3a3";
+      return "#a3a3a3"; // Fallback gray
   }
 }
 
+
 function capitalize(str: string) {
   return str.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function convertToCSV(data: GroupedSeverityData[]): string {
+  const headers = ["Group", ...ALL_SEVERITIES];
+  const rows = data.map((row) =>
+    [row.group, ...ALL_SEVERITIES.map((s) => row[s] ?? 0)].join(",")
+  );
+  return [headers.join(","), ...rows].join("\n");
 }
 
 export default function AdminDashboard() {
@@ -87,6 +96,18 @@ export default function AdminDashboard() {
     });
 
     setChartData(formatted);
+  };
+
+  const handleExportCSV = () => {
+    const csv = convertToCSV(chartData);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `severity_stats_by_${groupBy}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleLogout = () => {
@@ -135,6 +156,16 @@ export default function AdminDashboard() {
             <option value="sex_and_gender">Sex and Gender</option>
             <option value="civil_status">Civil Status</option>
           </select>
+        </div>
+
+        {/* Export Button */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={handleExportCSV}
+            className="bg-green-600 hover:bg-green-700 text-white font-medium px-5 py-2 rounded-lg shadow transition"
+          >
+            Export to CSV
+          </button>
         </div>
 
         {/* Chart Section */}
