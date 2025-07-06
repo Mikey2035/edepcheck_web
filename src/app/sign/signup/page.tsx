@@ -316,6 +316,55 @@ export default function SignupPage() {
             </p>
           </div>
         </div>
+        <style jsx global>{`
+          @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap");
+          .font-modern {
+            font-family: "Montserrat", Arial, Helvetica, sans-serif !important;
+            letter-spacing: -0.5px;
+          }
+          @keyframes bubble1 {
+            0% {
+              transform: translateY(0) scale(1);
+            }
+            50% {
+              transform: translateY(-20px) scale(1.1);
+            }
+            100% {
+              transform: translateY(0) scale(1);
+            }
+          }
+          @keyframes bubble2 {
+            0% {
+              transform: translateY(0) scale(1);
+            }
+            50% {
+              transform: translateY(-15px) scale(1.05);
+            }
+            100% {
+              transform: translateY(0) scale(1);
+            }
+          }
+          @keyframes bubble3 {
+            0% {
+              transform: translateY(0) scale(1);
+            }
+            50% {
+              transform: translateY(-18px) scale(1.08);
+            }
+            100% {
+              transform: translateY(0) scale(1);
+            }
+          }
+          .animate-bubble1 {
+            animation: bubble1 4s infinite ease-in-out;
+          }
+          .animate-bubble2 {
+            animation: bubble2 5s infinite ease-in-out;
+          }
+          .animate-bubble3 {
+            animation: bubble3 6s infinite ease-in-out;
+          }
+        `}</style>
       </div>
     </>
   );
