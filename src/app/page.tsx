@@ -262,7 +262,7 @@ const Home: React.FC = () => {
               {loading ? (
                 <button
                   disabled
-                  className="bg-gray-400 text-white px-6 py-3 rounded-full text-lg font-semibold shadow-md"
+                  className="flex items-center gap-2 bg-gray-400 text-white px-6 py-3 rounded-full text-lg font-semibold shadow-md"
                 >
                   ⏳ Loading...
                 </button>
