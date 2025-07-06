@@ -71,7 +71,7 @@ const Header: React.FC = () => {
           }}
         />
         <span className="text-2xl font-black text-white tracking-tight font-modern">
-          E-DepCheck
+          E-MINDCHECK
         </span>
       </Link>
 

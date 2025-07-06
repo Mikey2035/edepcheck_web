@@ -46,7 +46,7 @@ const Home: React.FC = () => {
         >
           {hovered !== "blue" && (
             <img
-              src="/images/we.png"
+              src="/images/left.png"
               alt="Left Illustration"
               className="w-full max-w-sm drop-shadow-2xl rounded-xl transition-transform duration-500 ease-in-out"
             />
@@ -65,7 +65,7 @@ const Home: React.FC = () => {
           <div className="w-full max-w-md">
             <div className="relative w-full flex justify-center items-center mb-4">
               <h1 className="text-4xl sm:text-5xl font-extrabold z-10">
-                E-DEPCHECK PHQ-9
+                E-MINDCHECK
               </h1>
               {/* Enhanced Animated Bubbles */}
               <span className="absolute left-0 top-2 w-6 h-6 bg-[#3A86FF] rounded-full opacity-70 animate-bubble1" />
@@ -252,7 +252,7 @@ const Home: React.FC = () => {
               `}</style>
             </div>
             <h2 className="text-2xl sm:text-3xl font-semibold mb-6">
-              Depression Assessment
+              Mental Health Assessment
             </h2>
             <p className="text-lg sm:text-xl font-medium mb-8">
               Your Mental Health Matters 🧠

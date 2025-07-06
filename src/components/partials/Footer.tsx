@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
         <div className="flex items-center gap-2 mb-2">
           <FaBrain className="text-2xl text-white" />
           <h2 className="text-2xl font-black tracking-tight text-white">
-            E-DepCheck
+            E-MINDCHECK
           </h2>
         </div>
 
@@ -51,7 +51,7 @@ const Footer: React.FC = () => {
 
         {/* Copyright */}
         <p className="text-sm text-white mt-2">
-          &copy; 2025 E-DepCheck. All rights reserved.
+          &copy; 2025 E-MINDCHECK. All rights reserved.
         </p>
       </div>
     </footer>
