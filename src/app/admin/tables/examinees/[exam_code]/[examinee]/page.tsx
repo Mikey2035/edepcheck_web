@@ -15,14 +15,13 @@ export default function ExamineeDetailsPage() {
   const params = useParams();
   const router = useRouter();
 
-  // Extract and decode parameters
   const exam_code = Array.isArray(params?.exam_code)
     ? params.exam_code[0]
     : params?.exam_code ?? "";
   const examineeParam = Array.isArray(params?.examinee)
     ? params.examinee[0]
     : params?.examinee ?? "";
-  const examinee = decodeURIComponent(examineeParam); // ✅ decode for display
+  const examinee = decodeURIComponent(examineeParam);
 
   const [details, setDetails] = useState<ResponseDetail[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,53 +56,69 @@ export default function ExamineeDetailsPage() {
   const severity = details[0]?.severity ?? "";
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-5xl mx-auto bg-white shadow-md rounded-lg p-6">
+    <div className="min-h-screen bg-[#A3D8F4] py-10 px-4 sm:px-8">
+      <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl p-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">
-            Examinee: {examinee} <br /> Exam Code: {exam_code}
-          </h1>
+          <div>
+            <h1 className="text-3xl font-bold text-[#c8272d]">
+              Examinee: <span className="text-black">{examinee}</span>
+            </h1>
+            <p className="text-gray-700 text-lg mt-1">
+              Exam Code: <span className="font-semibold">{exam_code}</span>
+            </p>
+          </div>
           <button
             onClick={handleBack}
-            className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+            className="bg-[#fcd116] hover:bg-yellow-400 text-black font-semibold px-4 py-2 rounded-full shadow"
           >
-            Back
+            ← Back
           </button>
         </div>
 
         {loading ? (
-          <p>Loading details...</p>
+          <p className="text-center text-gray-700">Loading details...</p>
         ) : details.length === 0 ? (
-          <p>No responses found for this examinee.</p>
+          <p className="text-center text-red-600 font-semibold">
+            No responses found for this examinee.
+          </p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full table-auto border border-gray-300">
-              <thead className="bg-gray-100">
+          <div className="overflow-x-auto mt-4">
+            <table className="w-full table-auto border border-gray-300 rounded-lg overflow-hidden text-sm">
+              <thead className="bg-[#fcd116]/40 text-gray-800">
                 <tr>
-                  <th className="border px-4 py-2">Question</th>
-                  <th className="border px-4 py-2">Choice</th>
-                  <th className="border px-4 py-2">Value</th>
+                  <th className="px-4 py-3 border text-left">Question</th>
+                  <th className="px-4 py-3 border text-left">Choice</th>
+                  <th className="px-4 py-3 border text-center">Value</th>
                 </tr>
               </thead>
               <tbody>
                 {details.map((detail, index) => (
-                  <tr key={index}>
-                    <td className="border px-4 py-2">{detail.question}</td>
-                    <td className="border px-4 py-2">{detail.choice}</td>
-                    <td className="border px-4 py-2">{detail.value}</td>
+                  <tr
+                    key={index}
+                    className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                  >
+                    <td className="px-4 py-2 border">{detail.question}</td>
+                    <td className="px-4 py-2 border text-blue-800">
+                      {detail.choice}
+                    </td>
+                    <td className="px-4 py-2 border text-center">
+                      {detail.value}
+                    </td>
                   </tr>
                 ))}
-                <tr className="bg-gray-100 font-bold">
-                  <td className="border px-4 py-2" colSpan={2}>
+                <tr className="bg-[#fcd116]/30 font-semibold text-gray-900">
+                  <td className="px-4 py-2 border" colSpan={2}>
                     Total Score
                   </td>
-                  <td className="border px-4 py-2">{totalScore}</td>
+                  <td className="px-4 py-2 border text-center">{totalScore}</td>
                 </tr>
-                <tr className="bg-gray-100 font-bold">
-                  <td className="border px-4 py-2" colSpan={2}>
+                <tr className="bg-[#fcd116]/30 font-semibold text-gray-900">
+                  <td className="px-4 py-2 border" colSpan={2}>
                     Severity
                   </td>
-                  <td className="border px-4 py-2">{severity}</td>
+                  <td className="px-4 py-2 border text-center text-red-600">
+                    {severity}
+                  </td>
                 </tr>
               </tbody>
             </table>
