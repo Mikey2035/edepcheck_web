@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IoArrowBack } from "react-icons/io5";
+import { FaCheckCircle } from "react-icons/fa";
 
 interface Result {
   id: string;
+  exam_code: string;
   total_score: number;
   severity: string;
-  submitted_at: string; // Add date field to show submission date
+  submitted_at: string;
 }
 
 const getAdvice = (severity: string) => {
@@ -23,7 +25,6 @@ export default function HistoryPage() {
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔐 Redirect if not logged in
   useEffect(() => {
     const fullName = sessionStorage.getItem("fullName");
     if (!fullName) {
@@ -31,7 +32,6 @@ export default function HistoryPage() {
     }
   }, [router]);
 
-  // 🔄 Fetch user results
   useEffect(() => {
     const fetchResults = async () => {
       const fullName = sessionStorage.getItem("fullName");
@@ -44,7 +44,7 @@ export default function HistoryPage() {
         if (!response.ok) throw new Error("Failed to fetch results");
 
         const data = await response.json();
-        setResults(data.results); // Make sure your API returns { results: [...] }
+        setResults(data.results);
       } catch (error) {
         console.error("Error fetching results:", error);
       } finally {
@@ -56,49 +56,60 @@ export default function HistoryPage() {
   }, []);
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      {/* 🔙 Back Button */}
+    <div className="w-full h-screen bg-[#A3D8F4] px-6 py-10 overflow-y-auto">
+      {/* Back Button */}
       <div className="flex items-center mb-6">
         <button
           onClick={() => router.back()}
-          className="text-blue-600 hover:text-blue-800 flex items-center"
+          className="text-black hover:text-red-800 flex items-center text-sm font-medium"
         >
           <IoArrowBack className="mr-2" size={20} />
           Back
         </button>
       </div>
 
-      <h1 className="text-2xl font-bold text-blue-800 mb-4">
+      <h1 className="text-3xl font-bold text-black mb-6">
         Your Past PHQ-9 Assessments
       </h1>
 
       {loading ? (
-        <p>Loading results...</p>
+        <p className="text-gray-600">Loading results...</p>
       ) : results.length === 0 ? (
-        <p className="text-gray-600">You haven’t taken any assessments yet.</p>
+        <p className="text-gray-500 text-center mt-10">
+          You haven’t taken any assessments yet.
+        </p>
       ) : (
-        <ul className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {results.map((result) => (
-            <li
+            <div
               key={result.id}
-              className="p-4 bg-gray-100 rounded shadow-sm space-y-1"
+              className="p-5 rounded-xl shadow-lg border-l-8 border-[#fcd116] bg-[#fffbea] hover:shadow-xl transition"
             >
-              <p>
-                <strong>Date:</strong>{" "}
-                {new Date(result.submitted_at).toLocaleDateString()}
-              </p>
-              <p>
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-sm text-gray-500">
+                  <strong>Date:</strong>{" "}
+                  {new Date(result.submitted_at).toLocaleDateString()}
+                </div>
+                <FaCheckCircle className="text-[#c8272d]" size={18} />
+              </div>
+              <h3 className="text-lg font-semibold text-[#c8272d] mb-1">
+                Exam Code: {result.exam_code}
+              </h3>
+              <p className="text-gray-800">
                 <strong>Total Score:</strong> {result.total_score}
               </p>
-              <p>
-                <strong>Severity:</strong> {result.severity}
+              <p className="text-gray-800">
+                <strong>Severity:</strong>{" "}
+                <span className="font-semibold text-[#c8272d]">
+                  {result.severity}
+                </span>
               </p>
-              <p className="text-sm italic text-gray-600">
+              <p className="text-sm italic text-gray-600 mt-2">
                 {getAdvice(result.severity)}
               </p>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
