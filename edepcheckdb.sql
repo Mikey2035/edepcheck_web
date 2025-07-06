@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 05, 2025 at 08:43 AM
+-- Generation Time: Jul 06, 2025 at 09:08 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,7 +39,10 @@ CREATE TABLE `categories` (
 
 INSERT INTO `categories` (`id`, `name`, `created_at`) VALUES
 (1, 'Work Performance & Efficiency', '2025-07-02 08:19:19'),
-(2, 'Coping & Support Systems', '2025-07-03 15:56:45');
+(2, 'Coping & Support Systems', '2025-07-03 15:56:45'),
+(6, 'Time Management', '2025-07-06 03:14:14'),
+(7, 'Emotional & Mental Well-being', '2025-07-06 03:19:20'),
+(8, 'Burnout & Fatigue', '2025-07-06 03:23:13');
 
 -- --------------------------------------------------------
 
@@ -60,18 +63,46 @@ CREATE TABLE `choices` (
 --
 
 INSERT INTO `choices` (`id`, `question_id`, `text`, `value`, `created_at`) VALUES
-(5, 2, 'Fully aware and used them', 3, '2025-07-03 15:56:45'),
-(6, 2, 'Aware but haven’t used them', 2, '2025-07-03 15:56:45'),
-(7, 2, 'Somewhat aware', 1, '2025-07-03 15:56:45'),
-(8, 2, 'Not aware at all', 0, '2025-07-03 15:56:45'),
-(21, 5, 'qweqewqwe', 3, '2025-07-04 07:00:21'),
-(22, 5, 'asdse', 2, '2025-07-04 07:00:21'),
-(23, 5, 'sfx', 1, '2025-07-04 07:00:21'),
-(24, 5, 'xfgwve', 0, '2025-07-04 07:00:21'),
-(29, 1, 'Always', 3, '2025-07-04 07:43:29'),
-(30, 1, 'Sometimes', 2, '2025-07-04 07:43:29'),
-(31, 1, 'Often', 1, '2025-07-04 07:43:29'),
-(32, 1, 'Never', 0, '2025-07-04 07:43:29');
+(41, 1, 'Always', 3, '2025-07-05 15:12:15'),
+(42, 1, 'Sometimes', 2, '2025-07-05 15:12:15'),
+(43, 1, 'Often', 1, '2025-07-05 15:12:15'),
+(44, 1, 'Never', 0, '2025-07-05 15:12:15'),
+(49, 6, 'Lower', 3, '2025-07-06 03:13:54'),
+(50, 6, 'About the same', 2, '2025-07-06 03:13:54'),
+(51, 6, 'Slightly higher', 1, '2025-07-06 03:13:54'),
+(52, 6, 'Much higher', 0, '2025-07-06 03:13:54'),
+(53, 7, 'Rarely', 3, '2025-07-06 03:16:07'),
+(54, 7, 'Sometimes', 2, '2025-07-06 03:16:07'),
+(55, 7, 'Often', 1, '2025-07-06 03:16:07'),
+(56, 7, 'Always', 0, '2025-07-06 03:16:07'),
+(57, 8, 'Rarely', 3, '2025-07-06 03:17:10'),
+(58, 8, 'Sometimes', 2, '2025-07-06 03:17:10'),
+(59, 8, 'Often', 1, '2025-07-06 03:17:10'),
+(60, 8, 'Always', 0, '2025-07-06 03:17:10'),
+(69, 10, 'Constantly', 3, '2025-07-06 03:20:28'),
+(70, 10, 'Frequently', 2, '2025-07-06 03:20:28'),
+(71, 10, 'Occasionally', 1, '2025-07-06 03:20:28'),
+(72, 10, 'Never', 0, '2025-07-06 03:20:28'),
+(73, 9, 'Not at all', 3, '2025-07-06 03:20:35'),
+(74, 9, 'Sometimes', 2, '2025-07-06 03:20:35'),
+(75, 9, 'Most of the time', 1, '2025-07-06 03:20:35'),
+(76, 9, 'Always', 0, '2025-07-06 03:20:35'),
+(77, 11, 'Rarely', 3, '2025-07-06 03:21:44'),
+(78, 11, 'Sometimes', 2, '2025-07-06 03:21:44'),
+(79, 11, 'Often', 1, '2025-07-06 03:21:44'),
+(80, 11, 'Always', 0, '2025-07-06 03:21:44'),
+(81, 2, 'Not aware at all', 3, '2025-07-06 03:22:47'),
+(82, 2, 'Somewhat aware', 2, '2025-07-06 03:22:47'),
+(83, 2, 'Aware but haven’t used them', 1, '2025-07-06 03:22:47'),
+(84, 2, 'Fully aware and used them', 0, '2025-07-06 03:22:47'),
+(85, 12, 'Often', 3, '2025-07-06 03:24:09'),
+(86, 12, 'Sometimes', 2, '2025-07-06 03:24:09'),
+(87, 12, 'Rarely', 1, '2025-07-06 03:24:09'),
+(88, 12, 'Never', 0, '2025-07-06 03:24:09'),
+(89, 13, 'Always', 3, '2025-07-06 03:25:12'),
+(90, 13, 'Often', 2, '2025-07-06 03:25:12'),
+(91, 13, 'Sometimes', 2, '2025-07-06 03:25:12'),
+(92, 13, 'Never', 0, '2025-07-06 03:25:12');
 
 -- --------------------------------------------------------
 
@@ -93,7 +124,14 @@ CREATE TABLE `questions` (
 INSERT INTO `questions` (`id`, `category_id`, `text`, `created_at`) VALUES
 (1, 1, 'Do you find it challenging to stay motivated during the workday?', '2025-07-02 08:30:09'),
 (2, 2, 'Are you aware of mental health resources offered by your employer?', '2025-07-03 15:56:45'),
-(5, 1, 'hello are you?', '2025-07-04 07:00:21');
+(6, 1, 'How would you rate your current productivity compared to the past few months?', '2025-07-06 03:13:54'),
+(7, 6, 'Are you able to complete tasks within the expected timeframe?', '2025-07-06 03:16:07'),
+(8, 6, 'Can you manage your time well without feeling overly stressed?', '2025-07-06 03:17:10'),
+(9, 2, 'Do you feel that your workplace supports work-life balance?', '2025-07-06 03:18:50'),
+(10, 7, 'How often do you feel anxious or stressed while working?', '2025-07-06 03:20:18'),
+(11, 7, 'Do you feel emotionally supported by your coworkers or supervisor?', '2025-07-06 03:21:44'),
+(12, 8, 'Do you feel physically tired or lacking energy during your work hours?', '2025-07-06 03:24:09'),
+(13, 8, 'How often do you feel that work demands are too much to handle?', '2025-07-06 03:25:12');
 
 -- --------------------------------------------------------
 
@@ -115,18 +153,9 @@ CREATE TABLE `responses` (
 --
 
 INSERT INTO `responses` (`id`, `user_id`, `exam_code_id`, `total_score`, `severity`, `submitted_at`) VALUES
-(1, 10, 3, 2, 'Minimal depression', '2025-07-03 05:55:51'),
-(2, 10, 3, 3, 'Minimal depression', '2025-07-03 05:56:44'),
-(5, 12, 3, 4, 'Minimal depression', '2025-07-03 06:22:53'),
-(6, 12, 3, 3, 'Minimal depression', '2025-07-03 14:47:41'),
-(7, 12, 3, 2, 'Minimal depression', '2025-07-03 15:14:20'),
-(8, 12, 3, 1, 'Minimal depression', '2025-07-03 15:17:07'),
-(9, 13, 3, 3, 'Minimal depression', '2025-07-03 15:18:07'),
-(10, 12, 3, 1, 'Minimal depression', '2025-07-03 15:57:58'),
-(11, 14, 3, 1, 'Minimal depression', '2025-07-04 04:44:32'),
-(12, 15, 5, 6, 'Mild depression', '2025-07-04 06:07:34'),
-(13, 12, 5, 5, 'Mild depression', '2025-07-04 07:57:43'),
-(14, 15, 5, 3, 'Minimal depression', '2025-07-04 08:07:53');
+(21, 22, 6, 0, 'Minimal depression or No Depression', '2025-07-06 03:42:49'),
+(22, 22, 6, 30, 'Severe depression', '2025-07-06 07:02:05'),
+(23, 22, 6, 30, 'Severe depression', '2025-07-06 07:03:58');
 
 -- --------------------------------------------------------
 
@@ -148,8 +177,7 @@ CREATE TABLE `tb_exam` (
 --
 
 INSERT INTO `tb_exam` (`id`, `exam_code`, `title`, `severity`, `total_examinees`, `exam_date`) VALUES
-(3, '20250714', 'Sample Exam', 'Pending', 9, '2025-07-13'),
-(5, '20250720', 'SCIENCE', 'Pending', 3, '2025-07-18');
+(6, '20250707', 'Sample Examination', 'Pending', 1, '2025-07-07');
 
 -- --------------------------------------------------------
 
@@ -177,20 +205,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `fullname`, `email`, `division`, `position`, `password`, `role`, `created_at`, `birthday`, `age`, `sex_and_gender`, `civil_status`) VALUES
-(4, 'qwerty', '', '', '', '$2b$10$3yji3BmARSOh.r0Wiflp1emzWQ17NyKthUdWUQwh5/8ZEWBOzp3YO', 'admin', '2025-07-01 08:04:42', NULL, 0, NULL, NULL),
-(5, 'Hetty', '', '', '', '$2b$10$.fBcYD89Ju4JaIaKewZKqudBd5qIx9qKPuM7cBg95hzQS/xKUo3v2', 'user', '2025-07-01 08:04:42', NULL, 0, NULL, NULL),
-(6, 'Admin admin', '', '', '', '$2b$10$E2/YicJqqKmBTwUsRFg3me4nXasFH8G4Gx6TQV7n4HBYWYvNwjUYa', 'admin', '2025-07-01 08:04:42', NULL, 0, NULL, NULL),
-(7, 'Kate Lorreine Colot', '', '', '', '$2b$10$YvWwkiXxfSaNr9IXPQAVAuoEQrVJhqpU0yPpLhsCEzBZIGjgErd9W', 'user', '2025-07-01 08:50:57', NULL, 0, NULL, NULL),
-(8, 'Joebert Cabatit', '', 'Finance and Administration', 'OJT', '$2b$10$YGbN0gtxxDSqV6haOn1VYOWK.BLMDDR7KXjZ4tS2TmJR7d8Q92bZ.', 'user', '2025-07-01 08:56:04', NULL, 0, NULL, NULL),
-(9, 'JK Cabatit', '', 'Finance and Administration', 'OJT', '$2b$10$pgfcBJiqkCOua6aMNjgAu.rgyC4NED8YZ8tILVvDRuT2LgFxGM9q6', 'user', '2025-07-02 02:07:32', NULL, 0, NULL, NULL),
-(10, 'Carlyn Dugmoc', 'carlynmaedugmoc@gmail.com', 'Finance and Administration', 'OJT', '$2b$10$riKky3XsQtIYV6D2LCWsAOxKLGwoFhaxZRWAhNbdf.OXkTLLU6luG', 'user', '2025-07-02 02:46:39', NULL, 0, NULL, NULL),
 (11, 'This is Admin', 'admin@edepcheck.com', 'Finance and Administration', 'Admin', '$2b$10$pRh/P8AD3l8LVZUo9zAyQuPHRRjcws7bCe3iIF60NZta4xehX7EYy', 'admin', '2025-07-02 02:51:44', NULL, 0, NULL, NULL),
-(12, 'Lorinkit Colot', 'lorinkit.colot@gmail.com', 'FAD', 'OJT', '$2b$10$Ky90F8ZwYZ.ITijVSyeKvu8ydZiRoBA714Hk73z0WVwj4V6RZ9ZN2', 'user', '2025-07-03 06:19:42', NULL, 0, NULL, NULL),
-(13, 'Heyjoe Cabatit', 'joeboicabs@gmail.com', 'Finance and Administration', 'OJT', '$2b$10$zEzfCdCfJehIL2Qfkkf7IeEOEJI.A9GKgc//4s5CuBxGJ3GDoDFrW', 'user', '2025-07-03 12:06:11', NULL, 0, NULL, NULL),
-(14, 'Earl Mike Romanillos', 'mikeroma@gmail.com', 'Local Government Capability Development Division', 'OJT', '$2b$10$cEKM3OMcSLLKkv/3DuS/OeB/a95i6OLAlvk03WIfodv8Q.OKrW94q', 'user', '2025-07-04 04:44:03', NULL, 0, NULL, NULL),
-(15, 'Mike Romanillos', 'romanillos.earlmike@gmail.com', 'Office of the Regional Director', 'Student', '$2b$10$6cLvu4o72zgBjPT8s4GEsOvTad./4d6Xv712gOxm3jnbGaMr1Y1lG', 'user', '2025-07-04 05:52:07', NULL, 0, NULL, NULL),
-(16, 'Mike Romanillos', 'romanillos.earlmike@gmail.com', 'Office of the Regional Director', 'Student', '$2b$10$GcCHUqdrD1k8BpLf1k04Ou2Vtogpma3zChkG8DdGykTBmc1fvbNGG', 'user', '2025-07-04 05:52:07', NULL, 0, NULL, NULL),
-(21, 'qqqqqqq', 'lori@gmail.com', 'Finance and Administration', 'OJT', '$2b$10$2L2FXG6fOVE8gZN8QvIq8Om0O0NMwFqiqEiLXxHk2fKHSm63Y19vW', 'user', '2025-07-04 16:07:43', '2004-08-03', 20, 'Female', 'Single');
+(22, 'Kate Lorreine Colot', 'lorinkit.colot@gmail.com', 'Finance and Administration', 'OJT', '$2b$10$4sPfRMrNJIxLPHRxOYzl3Owl4kbWSBQ4.nuJ7I9QQn8.WlVJx5WqK', 'user', '2025-07-06 03:40:59', '2004-08-03', 20, 'Female', 'Single');
 
 -- --------------------------------------------------------
 
@@ -213,15 +229,36 @@ CREATE TABLE `user_responses_details` (
 --
 
 INSERT INTO `user_responses_details` (`id`, `user_id`, `question_id`, `choice_id`, `exam_code_id`, `response_id`, `submitted_at`) VALUES
-(9, 12, 2, 8, 3, 10, '2025-07-03'),
-(11, 14, 2, 8, 3, 11, '2025-07-04'),
-(13, 15, 2, 5, 5, 12, '2025-07-04'),
-(15, 12, 1, 31, 5, 13, '2025-07-04'),
-(16, 12, 2, 6, 5, 13, '2025-07-04'),
-(18, 12, 5, 22, 5, 13, '2025-07-04'),
-(19, 15, 1, 31, 5, 14, '2025-07-04'),
-(20, 15, 2, 7, 5, 14, '2025-07-04'),
-(21, 15, 5, 23, 5, 14, '2025-07-04');
+(40, 22, 1, 44, 6, 21, '2025-07-06'),
+(41, 22, 2, 84, 6, 21, '2025-07-06'),
+(42, 22, 6, 52, 6, 21, '2025-07-06'),
+(43, 22, 7, 56, 6, 21, '2025-07-06'),
+(44, 22, 8, 60, 6, 21, '2025-07-06'),
+(45, 22, 9, 76, 6, 21, '2025-07-06'),
+(46, 22, 10, 72, 6, 21, '2025-07-06'),
+(47, 22, 11, 80, 6, 21, '2025-07-06'),
+(48, 22, 12, 88, 6, 21, '2025-07-06'),
+(49, 22, 13, 92, 6, 21, '2025-07-06'),
+(50, 22, 1, 41, 6, 22, '2025-07-06'),
+(51, 22, 2, 81, 6, 22, '2025-07-06'),
+(52, 22, 6, 49, 6, 22, '2025-07-06'),
+(53, 22, 7, 53, 6, 22, '2025-07-06'),
+(54, 22, 8, 57, 6, 22, '2025-07-06'),
+(55, 22, 9, 73, 6, 22, '2025-07-06'),
+(56, 22, 10, 69, 6, 22, '2025-07-06'),
+(57, 22, 11, 77, 6, 22, '2025-07-06'),
+(58, 22, 12, 85, 6, 22, '2025-07-06'),
+(59, 22, 13, 89, 6, 22, '2025-07-06'),
+(60, 22, 1, 41, 6, 23, '2025-07-06'),
+(61, 22, 2, 81, 6, 23, '2025-07-06'),
+(62, 22, 6, 49, 6, 23, '2025-07-06'),
+(63, 22, 7, 53, 6, 23, '2025-07-06'),
+(64, 22, 8, 57, 6, 23, '2025-07-06'),
+(65, 22, 9, 73, 6, 23, '2025-07-06'),
+(66, 22, 10, 69, 6, 23, '2025-07-06'),
+(67, 22, 11, 77, 6, 23, '2025-07-06'),
+(68, 22, 12, 85, 6, 23, '2025-07-06'),
+(69, 22, 13, 89, 6, 23, '2025-07-06');
 
 --
 -- Indexes for dumped tables
@@ -252,7 +289,7 @@ ALTER TABLE `questions`
 --
 ALTER TABLE `responses`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
+  ADD KEY `responses_ibfk_1` (`user_id`),
   ADD KEY `responses_ibfk_2` (`exam_code_id`);
 
 --
@@ -287,43 +324,43 @@ ALTER TABLE `user_responses_details`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `choices`
 --
 ALTER TABLE `choices`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
 
 --
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `responses`
 --
 ALTER TABLE `responses`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `tb_exam`
 --
 ALTER TABLE `tb_exam`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `user_responses_details`
 --
 ALTER TABLE `user_responses_details`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- Constraints for dumped tables
@@ -345,8 +382,8 @@ ALTER TABLE `questions`
 -- Constraints for table `responses`
 --
 ALTER TABLE `responses`
-  ADD CONSTRAINT `responses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `responses_ibfk_2` FOREIGN KEY (`exam_code_id`) REFERENCES `tb_exam` (`id`);
+  ADD CONSTRAINT `responses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `responses_ibfk_2` FOREIGN KEY (`exam_code_id`) REFERENCES `tb_exam` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `user_responses_details`
