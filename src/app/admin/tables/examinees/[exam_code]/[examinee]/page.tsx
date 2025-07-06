@@ -34,10 +34,13 @@ export default function ExamineeDetailsPage() {
             examinee
           )}`
         );
+        if (!res.ok) throw new Error("Failed to fetch examinee details");
         const data = await res.json();
         setDetails(data);
       } catch (err) {
-        console.error("Error fetching details:", err);
+        alert(
+          "Error: Unable to fetch examinee details. Please try again later."
+        );
       } finally {
         setLoading(false);
       }

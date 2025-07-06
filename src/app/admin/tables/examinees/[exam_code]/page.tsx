@@ -24,10 +24,11 @@ const ExamineeListPage = () => {
     const fetchResults = async () => {
       try {
         const res = await fetch(`/api/examinees?exam_code=${exam_code}`);
+        if (!res.ok) throw new Error("Failed to fetch examinee results");
         const data = await res.json();
         setResults(data);
       } catch (err) {
-        console.error("Error fetching examinees:", err);
+        alert("Error: Unable to fetch examinee data. Please try again later.");
       } finally {
         setLoading(false);
       }

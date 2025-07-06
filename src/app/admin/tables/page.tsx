@@ -46,7 +46,7 @@ const AdminExamTable = () => {
       const data = await res.json();
       setCategories(data);
     } catch (err) {
-      console.error("Failed to fetch categories:", err);
+      alert("Error: Failed to fetch categories");
     }
   };
 
@@ -54,10 +54,13 @@ const AdminExamTable = () => {
     try {
       const response = await fetch("/api/exams");
       const data = await response.json();
-      if (!Array.isArray(data)) return setExams([]);
+      if (!Array.isArray(data)) {
+        setExams([]);
+        return;
+      }
       setExams(data);
     } catch (err) {
-      console.error("Failed to fetch exams:", err);
+      alert("Error: Failed to fetch exams");
       setExams([]);
     }
   };
@@ -66,9 +69,7 @@ const AdminExamTable = () => {
     try {
       const response = await fetch("/api/questions");
       const data = await response.json();
-
       const groupedByCategory: any = {};
-
       data.forEach((row: any) => {
         const {
           category_name,
@@ -77,11 +78,8 @@ const AdminExamTable = () => {
           choice_text,
           choice_value,
         } = row;
-
-        if (!groupedByCategory[category_name]) {
+        if (!groupedByCategory[category_name])
           groupedByCategory[category_name] = {};
-        }
-
         if (!groupedByCategory[category_name][question_id]) {
           groupedByCategory[category_name][question_id] = {
             question_id,
@@ -89,16 +87,14 @@ const AdminExamTable = () => {
             choices: [],
           };
         }
-
         groupedByCategory[category_name][question_id].choices.push({
           text: choice_text,
           value: choice_value,
         });
       });
-
       setQuestionsData(groupedByCategory);
     } catch (err) {
-      console.error("Failed to fetch questions:", err);
+      alert("Error: Failed to fetch questions");
     }
   };
   
@@ -109,40 +105,55 @@ const AdminExamTable = () => {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete question");
+      alert("Question deleted successfully");
       fetchQuestions();
     } catch (err) {
-      console.error("Error deleting question:", err);
+      alert("Error: Could not delete question");
     }
   };
 
   const handleQuestionSubmit = async () => {
-    if (!categoryName || !questionText || choices.some((c) => !c)) return;
+    if (!categoryName || !questionText || choices.some((c) => !c)) {
+      alert("Please fill in all fields");
+      return;
+    }
 
     const url = editQuestionId
       ? `/api/questions?question_id=${editQuestionId}`
       : "/api/questions";
     const method = editQuestionId ? "PUT" : "POST";
 
-    await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        category_name: categoryName,
-        question_text: questionText,
-        choices: choices.map((text, i) => ({
-          text,
-          value: parseInt(values[i] as any, 10) || 0,
-        })),
-      }),
-    });
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category_name: categoryName,
+          question_text: questionText,
+          choices: choices.map((text, i) => ({
+            text,
+            value: parseInt(values[i] as any, 10) || 0,
+          })),
+        }),
+      });
 
-    setCategoryName("");
-    setQuestionText("");
-    setChoices(["", "", "", ""]);
-    setValues([0, 0, 0, 0]);
-    setEditQuestionId(null);
-    setShowQuestionModal(false);
-    fetchQuestions();
+      if (!res.ok) throw new Error("Failed to save question");
+
+      alert(
+        editQuestionId
+          ? "Question updated successfully"
+          : "Question added successfully"
+      );
+      setCategoryName("");
+      setQuestionText("");
+      setChoices(["", "", "", ""]);
+      setValues([0, 0, 0, 0]);
+      setEditQuestionId(null);
+      setShowQuestionModal(false);
+      fetchQuestions();
+    } catch (err) {
+      alert("Error: Could not save question");
+    }
   };
 
   const handleAddCategory = async () => {
@@ -157,33 +168,35 @@ const AdminExamTable = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           category_name: newCategoryName,
-          only_category: true, // Optional flag to signal it's category-only
+          only_category: true,
         }),
       });
 
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.message || "Failed to add category");
 
-      alert("Category added!");
+      alert("Category added successfully");
       setShowCategoryModal(false);
       setNewCategoryName("");
-
-      // 🔄 Optionally reload categories here (if in dropdown or list)
+      fetchCategories(); // ✅ Refresh categories after adding
     } catch (err) {
-      console.error(err);
-      alert("Error adding category.");
+      alert("Error: Could not add category");
     }
   };
   
   
 
   const handleAddOrEditExam = async () => {
-    if (!title || !date) return;
+    if (!title || !date) {
+      alert("Please fill in all fields");
+      return;
+    }
+
     const formattedDate = new Date(date);
     const exam_code = editExam
       ? editExam.exam_code
       : formattedDate.toISOString().slice(0, 10).replace(/-/g, "");
+
     const examData = {
       exam_code,
       title,
@@ -191,20 +204,24 @@ const AdminExamTable = () => {
       total_examinees: 0,
       exam_date: formattedDate.toISOString().slice(0, 10),
     };
+
     try {
       const res = await fetch("/api/exams", {
         method: editExam ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(examData),
       });
+
       if (!res.ok) throw new Error("Failed to save exam");
+
+      alert(editExam ? "Exam updated successfully" : "Exam added successfully");
       setTitle("");
       setDate("");
       setShowModal(false);
       setEditExam(null);
       fetchExams();
     } catch (err) {
-      console.error("Error saving exam:", err);
+      alert("Error: Could not save exam");
     }
   };
 
