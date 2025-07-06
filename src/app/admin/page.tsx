@@ -10,16 +10,10 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  LabelList,
 } from "recharts";
 
-const ALL_SEVERITIES = [
-  "Minimal depression or No Depression",
-  "Mild depression",
-  "Moderate depression",
-  "Moderately Severe depression",
-  "Severe depression",
-];
-
+// ✅ Types for severity data
 type SeverityData = {
   groupField: string;
   severity: string;
@@ -31,6 +25,61 @@ type GroupedSeverityData = {
   [severity: string]: string | number;
 };
 
+// ✅ Severity categories
+const ALL_SEVERITIES = [
+  "Minimal depression or No Depression",
+  "Mild depression",
+  "Moderate depression",
+  "Moderately Severe depression",
+  "Severe depression",
+];
+
+// ✅ Custom Tooltip component
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: {
+    dataKey?: string;
+    value?: number;
+    color?: string;
+  }[];
+  label?: string;
+}) => {
+  if (active && payload && payload.length) {
+    const total = payload.reduce(
+      (sum, item) => sum + (Number(item.value) || 0),
+      0
+    );
+
+    return (
+      <div className="bg-white p-3 rounded-lg shadow text-sm">
+        <p className="font-semibold text-[#1f2937] mb-2">{label}</p>
+        {payload.map((entry, index) => {
+          const count = Number(entry.value);
+          const percentage = total ? ((count / total) * 100).toFixed(1) : "0.0";
+          return (
+            <div key={index} className="flex justify-between gap-4">
+              <span style={{ color: entry.color }}>{entry.dataKey}</span>
+              <span>
+                {count} ({percentage}%)
+              </span>
+            </div>
+          );
+        })}
+        <div className="mt-2 border-t pt-1 text-gray-500">
+          Total: {total} people
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+// ✅ Get color based on severity
 function getSeverityColor(severity: string) {
   switch (severity.toLowerCase()) {
     case "minimal depression or no depression":
@@ -48,10 +97,10 @@ function getSeverityColor(severity: string) {
   }
 }
 
-
 function capitalize(str: string) {
   return str.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
+
 
 function convertToCSV(data: GroupedSeverityData[]): string {
   const headers = ["Group", ...ALL_SEVERITIES];
@@ -81,6 +130,7 @@ export default function AdminDashboard() {
 
   const formatChartData = (rawData: SeverityData[]) => {
     const grouped: Record<string, Record<string, number>> = {};
+
     rawData.forEach(({ groupField, severity, total }) => {
       if (!grouped[groupField]) grouped[groupField] = {};
       grouped[groupField][severity] =
@@ -119,7 +169,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-[#A3D8F4] py-8 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-[#c8272d] mb-4 sm:mb-0">
             Admin Dashboard
@@ -140,7 +190,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Filter Panel */}
         <div className="bg-white rounded-xl shadow-md p-6 mb-8">
           <h2 className="text-xl font-semibold text-[#1f2937] mb-3">
             Filter by Category
@@ -158,7 +207,7 @@ export default function AdminDashboard() {
           </select>
         </div>
 
-        {/* Export Button */}
+
         <div className="flex justify-end mb-4">
           <button
             onClick={handleExportCSV}
@@ -168,7 +217,7 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {/* Chart Section */}
+
         <div className="bg-white rounded-xl shadow-md p-6">
           <h2 className="text-2xl font-semibold text-[#1e40af] mb-6">
             Severity Levels by {capitalize(groupBy)}
@@ -186,7 +235,7 @@ export default function AdminDashboard() {
                 dataKey="group"
                 tick={{ fill: "#1f2937", fontWeight: 600 }}
               />
-              <Tooltip />
+              <Tooltip content={<CustomTooltip />} />
               <Legend />
               {ALL_SEVERITIES.map((severity) => (
                 <Bar
@@ -194,7 +243,15 @@ export default function AdminDashboard() {
                   dataKey={severity}
                   fill={getSeverityColor(severity)}
                   isAnimationActive
-                />
+                >
+                  <LabelList
+                    dataKey={severity}
+                    position="insideRight"
+                    fill="#1f2937"
+                    fontSize={12}
+                    formatter={(value: any) => (value ? `${value}` : "")}
+                  />
+                </Bar>
               ))}
             </BarChart>
           </ResponsiveContainer>
