@@ -49,7 +49,7 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className="relative z-50 flex justify-between items-center h-20 px-6 overflow-hidden"
+      className="relative z-50 flex justify-between items-center h-20 px-6 overflow-visible"
       style={{ background: "linear-gradient(90deg, #3A86FF 0%, #5F6CAF 100%)" }}
     >
       {/* Logo without Animated Bubbles */}
@@ -86,7 +86,6 @@ const Header: React.FC = () => {
       {/* Navigation */}
       <nav>
         <ul className="flex gap-4 items-center text-white font-medium">
-          {/* Reusable Nav Item */}
           <li>
             <Link
               href="/"
@@ -152,7 +151,7 @@ const Header: React.FC = () => {
               </button>
 
               {isProfileDropdownVisible && (
-                <div className="absolute right-0 top-full mt-2 bg-white shadow-lg rounded-md w-48 py-2 animate-fade-in z-50">
+                <div className="absolute right-0 top-full mt-2 bg-white shadow-lg rounded-md w-48 py-2 z-[9999]">
                   <div className="px-4 py-2 text-gray-700 border-b">
                     {fullName}
                   </div>

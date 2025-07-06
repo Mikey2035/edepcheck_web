@@ -151,7 +151,30 @@ export default async function handler(
       }
     }
 
-    res.setHeader("Allow", ["GET", "POST", "PUT"]);
+    // ✅ DELETE QUESTION
+    if (req.method === "DELETE") {
+      if (isNaN(questionId)) {
+        return res
+          .status(400)
+          .json({ error: "Missing or invalid question ID" });
+      }
+
+      try {
+        await pool.query("DELETE FROM choices WHERE question_id = ?", [
+          questionId,
+        ]);
+        await pool.query("DELETE FROM questions WHERE id = ?", [questionId]);
+
+        return res
+          .status(200)
+          .json({ message: "Question deleted successfully" });
+      } catch (err) {
+        console.error("Delete question error:", err);
+        return res.status(500).json({ error: "Failed to delete question" });
+      }
+    }
+
+    res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   } catch (err) {
     console.error("Question API error:", err);
