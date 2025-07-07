@@ -17,7 +17,7 @@ export default async function handler(
       division,
       position,
       birthday,
-      sex_and_gender,
+      gender,
       civil_status,
     } = req.body;
 
@@ -29,7 +29,7 @@ export default async function handler(
         !division ||
         !position ||
         !birthday ||
-        !sex_and_gender ||
+        !gender ||
         !civil_status
       ) {
         return res.status(400).json({ message: "All fields are required." });
@@ -73,7 +73,7 @@ export default async function handler(
       // ✅ Insert user with age
       const query = `
         INSERT INTO users 
-        (fullname, email, password, division, position, birthday, sex_and_gender, civil_status, age, role)
+        (fullname, email, password, division, position, birthday, gender, civil_status, age, role)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
       const values = [
@@ -83,7 +83,7 @@ export default async function handler(
         division,
         position,
         birthday,
-        sex_and_gender,
+        gender,
         civil_status,
         age,
         role,

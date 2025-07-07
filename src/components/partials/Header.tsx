@@ -138,6 +138,15 @@ const Header: React.FC = () => {
               <span className="font-semibold">Resources</span>
             </Link>
           </li>
+          <li>
+            <Link
+              href="/pages/hotline"
+              className="flex items-center gap-2 px-4 py-2 bg-transparent rounded-full shadow-sm hover:bg-white/10 transition-transform duration-300 transform hover:scale-105"
+            >
+              <FaBook className="text-white" />
+              <span className="font-semibold">Hotline</span>
+            </Link>
+          </li>
 
           {/* Profile/Login */}
           {fullName ? (

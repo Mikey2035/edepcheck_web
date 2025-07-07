@@ -28,7 +28,7 @@ export default function HistoryPage() {
   useEffect(() => {
     const fullName = sessionStorage.getItem("fullName");
     if (!fullName) {
-      router.push("/sign");
+      router.push("/sign/login");
     }
   }, [router]);
 
@@ -57,7 +57,7 @@ export default function HistoryPage() {
 
   return (
     <div className="w-full h-screen bg-[#A3D8F4] px-6 py-10 overflow-y-auto">
-      {/* Back Button */}
+
       <div className="flex items-center mb-6">
         <button
           onClick={() => router.back()}

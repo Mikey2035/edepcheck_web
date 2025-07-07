@@ -12,7 +12,7 @@ type User = {
   position: string;
   birthday: string;
   age: number;
-  sex_and_gender: string;
+  gender: string;
   civil_status: string;
 };
 
@@ -24,7 +24,7 @@ export default function ProfilePage() {
     fullname: "",
     division: "",
     position: "",
-    sex_and_gender: "",
+    gender: "",
     civil_status: "",
   });
 
@@ -36,14 +36,14 @@ export default function ProfilePage() {
     }
 
     fetch(`/api/user?email=${storedEmail}`)
-      .then((res) => res.ok ? res.json() : Promise.reject())
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((data) => {
         setUser(data);
         setFormData({
           fullname: data.fullname,
           division: data.division,
           position: data.position,
-          sex_and_gender: data.sex_and_gender,
+          gender: data.gender,
           civil_status: data.civil_status,
         });
       })
@@ -55,7 +55,9 @@ export default function ProfilePage() {
     router.push("/sign/login");
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -83,19 +85,27 @@ export default function ProfilePage() {
     }
   };
 
-  if (!user) return <div className="p-6 text-center text-gray-600">Loading profile...</div>;
+  if (!user)
+    return (
+      <div className="p-6 text-center text-gray-600">Loading profile...</div>
+    );
 
   return (
     <div className="min-h-screen bg-[#A3D8F4] flex items-center justify-center px-4 py-10">
       <div className="bg-white w-full max-w-3xl rounded-3xl shadow-xl p-8 relative">
         {/* Header */}
         <div className="flex justify-between items-center mb-6 border-b pb-4">
-          <button onClick={() => router.back()} className="text-[#c8272d] flex items-center text-sm hover:underline">
+          <button
+            onClick={() => router.back()}
+            className="text-[#c8272d] flex items-center text-sm hover:underline"
+          >
             <IoArrowBack className="mr-1" size={18} />
             Back
           </button>
-          <h1 className="text-2xl font-bold text-[#c8272d] text-center flex-grow">My Profile</h1>
-          <div className="w-12" /> {/* Spacer */}
+          <h1 className="text-2xl font-bold text-[#c8272d] text-center flex-grow">
+            My Profile
+          </h1>
+          <div className="w-12" />
         </div>
 
         {/* Profile Info */}
@@ -107,7 +117,7 @@ export default function ProfilePage() {
             ["Position", user.position],
             ["Birthday", new Date(user.birthday).toLocaleDateString()],
             ["Age", user.age.toString()],
-            ["Sex and Gender", user.sex_and_gender],
+            ["Gender", user.gender],
             ["Civil Status", user.civil_status],
           ].map(([label, value]) => (
             <div key={label}>
@@ -138,7 +148,9 @@ export default function ProfilePage() {
       {showModal && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex justify-center items-center p-4">
           <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-lg space-y-5">
-            <h2 className="text-xl font-bold text-[#c8272d] text-center mb-2">Edit Profile</h2>
+            <h2 className="text-xl font-bold text-[#c8272d] text-center mb-2">
+              Edit Profile
+            </h2>
 
             {[
               ["fullname", "Full Name"],
@@ -157,10 +169,10 @@ export default function ProfilePage() {
             ))}
 
             <div>
-              <label className="block text-sm text-gray-700">Sex and Gender</label>
+              <label className="block text-sm text-gray-700">Gender</label>
               <select
-                name="sex_and_gender"
-                value={formData.sex_and_gender}
+                name="gender"
+                value={formData.gender}
                 onChange={handleChange}
                 className="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-[#fcd116]"
               >
@@ -169,12 +181,17 @@ export default function ProfilePage() {
                 <option>Female</option>
                 <option>Transgender</option>
                 <option>Non-binary</option>
+                <option>Bisexual</option>
+                <option>Asexual</option>
+                <option>Others</option>
                 <option>Prefer not to say</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm text-gray-700">Civil Status</label>
+              <label className="block text-sm text-gray-700">
+                Civil Status
+              </label>
               <select
                 name="civil_status"
                 value={formData.civil_status}

@@ -1,27 +1,29 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { FaEye, FaEyeSlash, FaLock } from "react-icons/fa";
-import MainLayout from "@/components/layout/MainLayout";
 import Image from "next/image";
+
+const MainLayout = dynamic(() => import("@/components/layout/MainLayout"), {
+  ssr: false,
+});
 
 const LogIn: React.FC = () => {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [statusMessage, setStatusMessage] = useState("");
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
@@ -30,44 +32,43 @@ const LogIn: React.FC = () => {
       return;
     }
 
-    try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+    startTransition(async () => {
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
 
-      const data = await res.json();
-      if (!res.ok) {
-        setStatusMessage(data.message || "Something went wrong.");
-        setIsSuccessful(false);
-      } else {
-        setStatusMessage("Login successful!");
-        setIsSuccessful(true);
-
-        sessionStorage.setItem("email", data.user.email);
-        sessionStorage.setItem("fullName", data.user.fullname);
-        sessionStorage.setItem("role", data.user.role);
-
-        if (data.user.role === "admin") {
-          router.push("/admin");
+        const data = await res.json();
+        if (!res.ok) {
+          setStatusMessage(data.message || "Something went wrong.");
+          setIsSuccessful(false);
         } else {
-          router.push("/");
+          setStatusMessage("Login successful!");
+          setIsSuccessful(true);
+
+          sessionStorage.setItem("email", data.user.email);
+          sessionStorage.setItem("fullName", data.user.fullname);
+          sessionStorage.setItem("role", data.user.role);
+
+          if (data.user.role === "admin") {
+            router.push("/admin");
+          } else {
+            router.push("/");
+          }
         }
+      } catch (error) {
+        console.error("An error occurred:", error);
+        setStatusMessage("An error occurred. Please try again.");
+        setIsSuccessful(false);
       }
-    } catch (error) {
-      console.error("An error occurred:", error);
-      setStatusMessage("An error occurred. Please try again.");
-      setIsSuccessful(false);
-    }
+    });
   };
 
   return (
     <MainLayout>
       <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gradient-to-br from-[#A3D8F4] via-[#BFE6FC] to-[#E3F6FF] relative overflow-hidden">
-        {/* Floating bubbles background */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           <span className="absolute left-10 top-10 w-24 h-24 bg-white/10 rounded-full blur-2xl animate-bubble1" />
           <span className="absolute right-20 top-32 w-16 h-16 bg-white/20 rounded-full blur-xl animate-bubble2" />
@@ -89,9 +90,6 @@ const LogIn: React.FC = () => {
           </p>
           <form onSubmit={handleSubmit} className="w-full space-y-5">
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400">
-                <FaEye />
-              </span>
               <input
                 type="email"
                 id="email"
@@ -102,11 +100,11 @@ const LogIn: React.FC = () => {
                 placeholder="Email"
                 required
               />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400">
+                <FaEye />
+              </span>
             </div>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400">
-                <FaLock />
-              </span>
               <input
                 type={passwordVisible ? "text" : "password"}
                 id="password"
@@ -117,6 +115,9 @@ const LogIn: React.FC = () => {
                 placeholder="Password"
                 required
               />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400">
+                <FaLock />
+              </span>
               <button
                 type="button"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400"
@@ -137,8 +138,9 @@ const LogIn: React.FC = () => {
             <button
               type="submit"
               className="w-full py-2 rounded-lg bg-gradient-to-r from-[#3A86FF] to-[#5F6CAF] text-white font-semibold shadow-lg hover:scale-105 transition-transform"
+              disabled={isPending}
             >
-              Log In
+              {isPending ? "Logging in..." : "Log In"}
             </button>
           </form>
           <div className="text-center mt-6 text-sm">
