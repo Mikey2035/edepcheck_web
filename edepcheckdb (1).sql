@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 06, 2025 at 09:08 AM
+-- Generation Time: Jul 07, 2025 at 05:17 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -99,10 +99,10 @@ INSERT INTO `choices` (`id`, `question_id`, `text`, `value`, `created_at`) VALUE
 (86, 12, 'Sometimes', 2, '2025-07-06 03:24:09'),
 (87, 12, 'Rarely', 1, '2025-07-06 03:24:09'),
 (88, 12, 'Never', 0, '2025-07-06 03:24:09'),
-(89, 13, 'Always', 3, '2025-07-06 03:25:12'),
-(90, 13, 'Often', 2, '2025-07-06 03:25:12'),
-(91, 13, 'Sometimes', 2, '2025-07-06 03:25:12'),
-(92, 13, 'Never', 0, '2025-07-06 03:25:12');
+(101, 13, 'Always', 3, '2025-07-07 11:14:56'),
+(102, 13, 'Often', 2, '2025-07-07 11:14:56'),
+(103, 13, 'Sometimes', 1, '2025-07-07 11:14:56'),
+(104, 13, 'Never', 0, '2025-07-07 11:14:56');
 
 -- --------------------------------------------------------
 
@@ -177,7 +177,7 @@ CREATE TABLE `tb_exam` (
 --
 
 INSERT INTO `tb_exam` (`id`, `exam_code`, `title`, `severity`, `total_examinees`, `exam_date`) VALUES
-(6, '20250707', 'Sample Examination', 'Pending', 1, '2025-07-07');
+(6, '20250707', 'Sample Examination', 'Pending', 3, '2025-07-07');
 
 -- --------------------------------------------------------
 
@@ -196,7 +196,7 @@ CREATE TABLE `users` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `birthday` date DEFAULT NULL,
   `age` int(11) NOT NULL,
-  `sex_and_gender` varchar(30) DEFAULT NULL,
+  `gender` varchar(30) DEFAULT NULL,
   `civil_status` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -204,9 +204,12 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `fullname`, `email`, `division`, `position`, `password`, `role`, `created_at`, `birthday`, `age`, `sex_and_gender`, `civil_status`) VALUES
+INSERT INTO `users` (`id`, `fullname`, `email`, `division`, `position`, `password`, `role`, `created_at`, `birthday`, `age`, `gender`, `civil_status`) VALUES
 (11, 'This is Admin', 'admin@edepcheck.com', 'Finance and Administration', 'Admin', '$2b$10$pRh/P8AD3l8LVZUo9zAyQuPHRRjcws7bCe3iIF60NZta4xehX7EYy', 'admin', '2025-07-02 02:51:44', NULL, 0, NULL, NULL),
-(22, 'Kate Lorreine Colot', 'lorinkit.colot@gmail.com', 'Finance and Administration', 'OJT', '$2b$10$4sPfRMrNJIxLPHRxOYzl3Owl4kbWSBQ4.nuJ7I9QQn8.WlVJx5WqK', 'user', '2025-07-06 03:40:59', '2004-08-03', 20, 'Female', 'Single');
+(22, 'Kate Lorreine Colot', 'lorinkit.colot@gmail.com', 'Finance and Administration', 'OJT', '$2b$10$4sPfRMrNJIxLPHRxOYzl3Owl4kbWSBQ4.nuJ7I9QQn8.WlVJx5WqK', 'user', '2025-07-06 03:40:59', '2004-08-03', 20, 'Female', 'Single'),
+(25, 'Earl Mike Romanillos', 'romanillos.earlmike@gmail.com', 'Local Government Capability Development Division', 'OJT', '$2b$10$1IgB3pCvKHcBu/T0YwuEiuNdA986uQ8fjQII.RC8KAV5SA.2G/m2q', 'user', '2025-07-07 04:18:04', '2003-09-28', 21, 'Male', 'Single'),
+(26, 'Joebert Cabatit', 'joecabs@gmail.com', 'Finance and Administration', 'OJT', '$2b$10$aGLleUm99rcXIEFf8fau/.S.22mMvXV3ZNfSTfXjQFUZK.HxZb.Fa', 'user', '2025-07-07 10:38:03', '2004-08-03', 20, 'Male', 'Single'),
+(27, 'Boboi Cabatit', 'boboicabs@gmail.com', 'Office of the Regional Director', 'OJT', '$2b$10$1LEaKca3W5QeZnnBT2.v.O6Tw/8vjQ14ZOI642vDyWHEXCibes6Eq', 'user', '2025-07-07 11:27:29', '2000-02-23', 25, 'Male', 'Single');
 
 -- --------------------------------------------------------
 
@@ -238,7 +241,6 @@ INSERT INTO `user_responses_details` (`id`, `user_id`, `question_id`, `choice_id
 (46, 22, 10, 72, 6, 21, '2025-07-06'),
 (47, 22, 11, 80, 6, 21, '2025-07-06'),
 (48, 22, 12, 88, 6, 21, '2025-07-06'),
-(49, 22, 13, 92, 6, 21, '2025-07-06'),
 (50, 22, 1, 41, 6, 22, '2025-07-06'),
 (51, 22, 2, 81, 6, 22, '2025-07-06'),
 (52, 22, 6, 49, 6, 22, '2025-07-06'),
@@ -248,7 +250,6 @@ INSERT INTO `user_responses_details` (`id`, `user_id`, `question_id`, `choice_id
 (56, 22, 10, 69, 6, 22, '2025-07-06'),
 (57, 22, 11, 77, 6, 22, '2025-07-06'),
 (58, 22, 12, 85, 6, 22, '2025-07-06'),
-(59, 22, 13, 89, 6, 22, '2025-07-06'),
 (60, 22, 1, 41, 6, 23, '2025-07-06'),
 (61, 22, 2, 81, 6, 23, '2025-07-06'),
 (62, 22, 6, 49, 6, 23, '2025-07-06'),
@@ -257,8 +258,7 @@ INSERT INTO `user_responses_details` (`id`, `user_id`, `question_id`, `choice_id
 (65, 22, 9, 73, 6, 23, '2025-07-06'),
 (66, 22, 10, 69, 6, 23, '2025-07-06'),
 (67, 22, 11, 77, 6, 23, '2025-07-06'),
-(68, 22, 12, 85, 6, 23, '2025-07-06'),
-(69, 22, 13, 89, 6, 23, '2025-07-06');
+(68, 22, 12, 85, 6, 23, '2025-07-06');
 
 --
 -- Indexes for dumped tables
@@ -330,7 +330,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `choices`
 --
 ALTER TABLE `choices`
-  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- AUTO_INCREMENT for table `questions`
@@ -354,7 +354,7 @@ ALTER TABLE `tb_exam`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `user_responses_details`
